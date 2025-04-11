@@ -257,7 +257,7 @@ function handleCheckAction() {
                 currentWordIndex++;
                 totalProgress++; // Increment only on correct answer
                 loadWord();
-            }, 1500);
+            }, 1000);
         } else {
             currentWordIndex++;
             totalProgress++; // Increment only on correct answer
@@ -291,7 +291,7 @@ function handleCheckAction() {
                 incorrectTimeout = setTimeout(() => {
                     speakWord(currentWordData.word);
                     incorrectTimeout = null;
-                }, 2000);
+                }, 100);
             }
         } else {
             if (incorrectTimeout) {
@@ -300,7 +300,7 @@ function handleCheckAction() {
             incorrectTimeout = setTimeout(() => {
                 speakWord(currentWordData.word);
                 incorrectTimeout = null;
-            }, 2000);
+            }, 100);
         }
     }
 }
