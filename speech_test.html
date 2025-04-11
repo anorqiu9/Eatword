@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>朗读测试</title></head>
+<body>
+  <h2>输入文字朗读：</h2>
+  <input id="text" value="Hello, 你好！">
+  <button onclick="speakText()">朗读</button>
+
+  <script>
+    let voices = [];
+
+    // 加载语音列表
+    function loadVoices() {
+      voices = window.speechSynthesis.getVoices();
+    }
+
+    // 确保语音加载完成
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+
+    function speakText() {
+      const text = document.getElementById('text').value;
+      const utterance = new SpeechSynthesisUtterance(text);
+
+      // 选择适合的语音
+      if (/[\u4e00-\u9fa5]/.test(text)) {
+        // 中文
+        utterance.voice = voices.find(v => v.lang.startsWith('zh') && v.localService);
+      } else {
+        // 英文
+        utterance.voice = voices.find(v => v.lang.startsWith('en') && v.localService);
+      }
+
+      if (!utterance.voice) {
+        alert("未找到合适语音，请确保启用了语音朗读功能");
+      }
+
+      window.speechSynthesis.speak(utterance);
+    }
+  </script>
+</body>
+</html>
