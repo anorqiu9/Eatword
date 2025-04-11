@@ -22,162 +22,44 @@ const actionButtonsDiv = document.getElementById('action-buttons');
 
 // --- Congratulation Messages ---
 const congratulationMessages = [
-    // English messages
-    "Good job!",
-    "Excellent!",
-    "Well done!",
-    "Perfect!",
-    "Amazing!",
-    // Chinese messages
-    "做得好！",
-    "太棒了！",
-    "非常好！",
-    "完美！",
-    "加鸡腿",
-    "真厉害！",
-    "你真牛!",
-    "太厉害了!"
+    "Good job!", "Excellent!", "Well done!", "Perfect!", "Amazing!",
+    "做得好！", "太棒了！", "非常好！", "完美！", "加鸡腿", "真厉害！", "你真牛!", "太厉害了!"
 ];
 
-// --- Word Data with IPA Pronunciation (General American) ---
-const wordsData = [
-  {
-    "unit": "Unit 1",
-    "words": [
-      {
-        "word": "sci-fi movie",
-        "syllables": "sci / fi · moo / vie",
-        "pronunciation": "/ˈsaɪ.faɪ ˈmuːvi/",
-        "meaning": "科幻电影"
-      },
-      {
-        "word": "mystery",
-        "syllables": "mys / ter / y",
-        "pronunciation": "/ˈmɪstəri/",
-        "meaning": "悬疑片"
-      },
-      {
-        "word": "adventure movie",
-        "syllables": "ad / ven / ture · moo / vie",
-        "pronunciation": "/ədˈventʃər ˈmuːvi/",
-        "meaning": "冒险电影"
-      },
-      {
-        "word": "action movie",
-        "syllables": "ac / tion · moo / vie",
-        "pronunciation": "/ˈækʃən ˈmuːvi/",
-        "meaning": "动作电影"
-      },
-      {
-        "word": "fantasy movie",
-        "syllables": "fan / ta / sy · moo / vie",
-        "pronunciation": "/ˈfæntəsi ˈmuːvi/",
-        "meaning": "奇幻电影"
-      },
-      {
-        "word": "horror movie",
-        "syllables": "hor / ror · moo / vie",
-        "pronunciation": "/ˈhɔrər ˈmuːvi/",
-        "meaning": "恐怖电影"
-      },
-      {
-        "word": "stuntwoman",
-        "syllables": "stunt / wo / man",
-        "pronunciation": "/ˈstʌntˌwʊmən/",
-        "meaning": "女特技演员"
-      },
-      {
-        "word": "actress",
-        "syllables": "act / ress",
-        "pronunciation": "/ˈæktrəs/",
-        "meaning": "女演员"
-      },
-      {
-        "word": "cameraman",
-        "syllables": "ca / me / ra / man",
-        "pronunciation": "/ˈkæmərəˌmæn/",
-        "meaning": "摄影师"
-      },
-      {
-        "word": "director",
-        "syllables": "di / rec / tor",
-        "pronunciation": "/dəˈrektər/",
-        "meaning": "导演"
-      },
-      {
-        "word": "actor",
-        "syllables": "ac / tor",
-        "pronunciation": "/ˈæktər/",
-        "meaning": "男演员"
-      },
-      {
-        "word": "martial arts",
-        "syllables": "mar / tial · arts",
-        "pronunciation": "/ˈmɑrʃəl ɑrts/",
-        "meaning": "武术"
-      },
-      {
-        "word": "animated movie",
-        "syllables": "an / i / ma / ted · moo / vie",
-        "pronunciation": "/ˈænɪmeɪtɪd ˈmuːvi/",
-        "meaning": "动画电影"
-      },
-      {
-        "word": "comedy",
-        "syllables": "com / e / dy",
-        "pronunciation": "/ˈkɑmədi/",
-        "meaning": "喜剧"
-      },
-      {
-        "word": "romantic movie",
-        "syllables": "ro / man / tic · moo / vie",
-        "pronunciation": "/roʊˈmæntɪk ˈmuːvi/",
-        "meaning": "爱情电影"
-      },
-      {
-        "word": "exciting",
-        "syllables": "ex / cit / ing",
-        "pronunciation": "/ɪkˈsaɪtɪŋ/",
-        "meaning": "令人兴奋的"
-      }
-    ]
-  }
-];
-
-
-
-// Initialize unit index and shuffled words
+// Initialize unit index and shuffled words (wordsData comes from words.js)
 let currentUnitIndex = 0;
-shuffledWords = [...wordsData[currentUnitIndex].words];
+let shuffledWords = [...wordsData[currentUnitIndex].words];
+let totalProgress = 0; // Track total words completed across units
 promptDiv.textContent = 'Please select a mode to start.';
-
-
-// Remove the old words array
-// const words = [...];
-// --- End Word Data ---
 
 let currentWordIndex = 0;
 let incorrectAttempts = 0;
 const MAX_ATTEMPTS = 3;
-let currentMode = 'review'; // Default mode
+let currentMode = 'review';
 let synth = window.speechSynthesis;
 let currentUtterance = null;
-const pronunciationPlaceholder = "No IPA available"; // English Placeholder
-
-
+let incorrectTimeout = null;
+let isSpeaking = false;
+const pronunciationPlaceholder = "No IPA available";
 
 // --- Functions ---
-
-function shuffleArray(array) { /* ... (same) ... */
+function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [array[i], array[j]] = [array[j], array[i]];
     }
 }
-function speakWord(text) {
-    if (!text) return;
 
-    // 确保用户已经有交互行为
+function getTotalWords() {
+    return wordsData.reduce((total, unit) => total + unit.words.length, 0);
+}
+
+function speakWord(text) {
+    if (!text) {
+        console.log('No text to speak');
+        return;
+    }
+
     if (!document.hasFocus()) {
         console.log('等待用户交互...');
         feedbackDiv.textContent = '请点击页面任意位置以启用语音';
@@ -185,13 +67,13 @@ function speakWord(text) {
         return;
     }
 
-    // 取消当前正在播放的语音
-    if (synth.speaking) synth.cancel();
-    if (currentUtterance) synth.cancel();
+    console.log(`Attempting to speak: ${text}`);
+    synth.cancel(); // Clear all pending utterances
+    isSpeaking = true;
 
-    // 确保voices已加载
     let voices = synth.getVoices();
     if (voices.length === 0) {
+        console.log('No voices available, waiting for voiceschanged');
         synth.onvoiceschanged = () => {
             voices = synth.getVoices();
             if (voices.length > 0) {
@@ -199,41 +81,41 @@ function speakWord(text) {
                 speakWord(text);
             }
         };
+        isSpeaking = false;
         return;
     }
 
-    // 创建新的语音合成实例
     currentUtterance = new SpeechSynthesisUtterance(text);
-    
-    // 设置事件处理器
-    currentUtterance.onend = () => { 
-        currentUtterance = null; 
+    currentUtterance.onend = () => {
+        console.log(`Finished speaking: ${text}`);
+        currentUtterance = null;
+        isSpeaking = false;
     };
 
     let retryCount = 0;
     const maxRetries = 3;
 
     currentUtterance.onerror = (event) => {
-        console.error('语音合成错误:', event);
-        
+        console.error('Speech synthesis error:', event);
+        /*
         if (retryCount < maxRetries) {
             retryCount++;
-            console.log(`尝试重新合成语音 (${retryCount}/${maxRetries})`);
+            console.log(`Retrying speech (${retryCount}/${maxRetries})`);
             setTimeout(() => {
-                if (synth.speaking) synth.cancel();
-                // 重新创建utterance实例
+                synth.cancel();
                 const newUtterance = new SpeechSynthesisUtterance(text);
-                newUtterance.onend = () => { currentUtterance = null; };
+                newUtterance.onend = () => {
+                    currentUtterance = null;
+                    isSpeaking = false;
+                    console.log(`Retry finished: ${text}`);
+                };
                 newUtterance.onerror = currentUtterance.onerror;
-                
-                // 复制所有必要的属性
                 if (selectedVoice) {
                     newUtterance.voice = selectedVoice;
                     newUtterance.pitch = 1.1;
                     newUtterance.rate = 0.9;
                 }
                 newUtterance.volume = 1;
-                
                 currentUtterance = newUtterance;
                 synth.speak(currentUtterance);
             }, 1000);
@@ -241,10 +123,12 @@ function speakWord(text) {
             feedbackDiv.textContent = '语音合成暂时不可用，请稍后再试';
             feedbackDiv.className = 'incorrect';
             currentUtterance = null;
+            isSpeaking = false;
+            console.log('Speech synthesis failed after retries');
         }
+            //*/
     };
 
-    // 优先选择中文语音，如果没有则使用英文语音
     let selectedVoice = voices.find(voice => voice.lang.startsWith('zh-')) ||
                        voices.find(voice => voice.lang.startsWith('zh_')) ||
                        voices.find(voice => voice.lang.startsWith('en-')) ||
@@ -252,22 +136,27 @@ function speakWord(text) {
 
     if (selectedVoice) {
         currentUtterance.voice = selectedVoice;
-        currentUtterance.pitch = 1.1;  // 略微提高音调
-        currentUtterance.rate = 0.9;   // 略微降低语速
+        currentUtterance.pitch = 1.1;
+        currentUtterance.rate = 0.8;
+        console.log(`Using voice: ${selectedVoice.name}`);
+    } else {
+        console.log('No preferred voice found, using default');
     }
 
     currentUtterance.volume = 1;
-    
+
     try {
         synth.speak(currentUtterance);
+        console.log(`Speaking: ${text}`);
     } catch (error) {
-        console.error('语音合成初始化失败:', error);
+        console.error('Speech synthesis initialization failed:', error);
         feedbackDiv.textContent = '语音功能初始化失败，请刷新页面重试';
         feedbackDiv.className = 'incorrect';
+        isSpeaking = false;
     }
 }
 
-function showResultDetails() { /* ... (same) ... */
+function showResultDetails() {
     const currentWordData = shuffledWords[currentWordIndex];
     if (!currentWordData) return;
     resultDiv.style.display = 'block';
@@ -278,8 +167,9 @@ function showResultDetails() { /* ... (same) ... */
 }
 
 function loadWord() {
-    // Check if finished
+    console.log('Loading new word');
     if (currentWordIndex >= shuffledWords.length) {
+        totalProgress += shuffledWords.length; // Add completed unit’s words
         currentUnitIndex++;
         if (currentUnitIndex >= wordsData.length) {
             promptDiv.textContent = 'Congratulations! You have completed all units!';
@@ -288,7 +178,7 @@ function loadWord() {
             reviewDisplayDiv.style.display = 'none';
             promptDisplayDiv.style.display = 'none';
             containerDiv.classList.remove('input-visible', 'attempts-visible', 'buttons-visible');
-            progressDiv.textContent = `Mode: ${getModeName(currentMode)} | Total ${shuffledWords.length} words completed.`;
+            progressDiv.textContent = `Mode: ${getModeName(currentMode)} | Total ${totalProgress} words completed.`;
             return;
         }
         shuffledWords = [...wordsData[currentUnitIndex].words];
@@ -308,15 +198,15 @@ function loadWord() {
     wordMeaningReviewSpan.style.display = 'none'; wordMeaningReviewSpan.textContent = '';
     containerDiv.classList.remove('input-visible', 'attempts-visible', 'buttons-visible');
     containerDiv.classList.add('buttons-visible');
+    synth.cancel(); // Clear speech queue
+    isSpeaking = false; // Reset speaking state
     let hasPronunciation = currentWordData.pronunciation && currentWordData.pronunciation !== pronunciationPlaceholder;
 
     switch (currentMode) {
         case 'review':
-            promptDiv.textContent = 'Review Mode: See the word and IPA, type the word.';
+            promptDiv.textContent = 'Review Mode: See the word and IPA, type the word. Click "Speak Again" to hear the word.';
             wordTextSpan.textContent = currentWordData.word;
-            // Add syllable splitting
-            const syllables = currentWordData.syllables;
-            wordSyllablesSpan.textContent = syllables;
+            wordSyllablesSpan.textContent = currentWordData.syllables;
             wordPronunciationSpan.textContent = currentWordData.pronunciation || pronunciationPlaceholder;
             wordMeaningReviewSpan.textContent = currentWordData.meaning;
             wordMeaningReviewSpan.style.display = 'block';
@@ -325,15 +215,12 @@ function loadWord() {
             checkButton.textContent = 'Check';
             speakButton.style.display = 'inline-block';
             wordInput.focus();
-            speakWord(currentWordData.word);
             break;
         case 'dictation':
-            promptDiv.textContent = 'Dictation Mode: Type the English word based on the IPA.';
+            promptDiv.textContent = 'Dictation Mode: Type the English word based on the IPA. Click "Speak Again" to hear the word.';
             if (hasPronunciation) {
                 promptDisplayDiv.textContent = currentWordData.pronunciation;
-                speakWord(currentWordData.word);
-            }
-            else {
+            } else {
                 promptDisplayDiv.textContent = "(Cannot use this mode: IPA missing for this word)";
                 promptDisplayDiv.classList.add('missing-pronunciation');
                 wordInput.disabled = true;
@@ -347,15 +234,14 @@ function loadWord() {
             if (!wordInput.disabled) wordInput.focus();
             break;
         case 'listening':
-            promptDiv.textContent = 'Listening Mode: Listen to the audio, type the English word.';
+            promptDiv.textContent = 'Listening Mode: Listen to the audio, type the English word. Click "Speak Again" to hear the word.';
             containerDiv.classList.add('input-visible', 'attempts-visible');
             checkButton.textContent = 'Check'; speakButton.style.display = 'inline-block';
             updateAttemptCounter();
             wordInput.focus();
-            // Use a slight delay to ensure any previous speech has time to potentially clear
-            setTimeout(() => speakWord(currentWordData.word), 150);
             break;
     }
+    speakWord(currentWordData.word);
     updateProgress();
 }
 
@@ -367,18 +253,35 @@ function handleCheckAction() {
     const correctWordLower = currentWordData.word.toLowerCase();
     const nextWordData = currentWordIndex + 1 < shuffledWords.length ? shuffledWords[currentWordIndex + 1] : null;
 
+    // Debounce input
+    wordInput.disabled = true;
+    checkButton.disabled = true;
+    setTimeout(() => {
+        if (checkButton.style.display !== 'none') {
+            wordInput.disabled = false;
+            checkButton.disabled = false;
+            if (containerDiv.classList.contains('input-visible')) wordInput.focus();
+        }
+    }, 500);
+
     if (userInput === correctWordLower) {
         feedbackDiv.textContent = 'Correct!';
         feedbackDiv.className = 'correct';
+        if (incorrectTimeout) {
+            clearTimeout(incorrectTimeout);
+            incorrectTimeout = null;
+        }
         if (nextWordData) {
             const randomMessage = congratulationMessages[Math.floor(Math.random() * congratulationMessages.length)];
             speakWord(randomMessage);
             setTimeout(() => {
                 currentWordIndex++;
+                totalProgress++;
                 loadWord();
-            }, 1000);
+            }, 1500);
         } else {
             currentWordIndex++;
+            totalProgress++;
             loadWord();
         }
         return;
@@ -386,18 +289,15 @@ function handleCheckAction() {
         feedbackDiv.textContent = 'Incorrect, please try again.';
         feedbackDiv.className = 'incorrect';
         wordInput.value = '';
-        wordInput.focus();
-        speakWord("Uh-oh, try again");
-        setTimeout(() => speakWord(currentWordData.word), 2000);
-        /*
-        if (currentMode === 'listening' || currentMode === 'review') {
-            setTimeout(() => speakWord(currentWordData.word), 1000);
-        }
-            */
+        speakWord("Uh-oh");
         if (currentMode === 'listening') {
             incorrectAttempts++;
             updateAttemptCounter();
             if (incorrectAttempts >= MAX_ATTEMPTS) {
+                if (incorrectTimeout) {
+                    clearTimeout(incorrectTimeout);
+                    incorrectTimeout = null;
+                }
                 feedbackDiv.textContent = `Attempts exceeded! The correct word was: ${currentWordData.word}`;
                 feedbackDiv.className = 'reveal';
                 showResultDetails();
@@ -405,59 +305,116 @@ function handleCheckAction() {
                 checkButton.style.display = 'none';
                 nextWordButton.style.display = 'inline-block';
                 containerDiv.classList.remove('attempts-visible');
+            } else {
+                if (incorrectTimeout) {
+                    clearTimeout(incorrectTimeout);
+                }
+                incorrectTimeout = setTimeout(() => {
+                    speakWord(currentWordData.word);
+                    incorrectTimeout = null;
+                }, 2000);
             }
+        } else {
+            if (incorrectTimeout) {
+                clearTimeout(incorrectTimeout);
+            }
+            incorrectTimeout = setTimeout(() => {
+                speakWord(currentWordData.word);
+                incorrectTimeout = null;
+            }, 2000);
         }
     }
 }
 
-function updateAttemptCounter() { /* ... (same) ... */
-     if ((currentMode === 'dictation' || currentMode === 'listening') && !wordInput.disabled) {
-       attemptCounterDiv.textContent = `Attempts remaining: ${MAX_ATTEMPTS - incorrectAttempts}`;
-     } else {
-       attemptCounterDiv.textContent = '';
-     }
+function updateAttemptCounter() {
+    if ((currentMode === 'dictation' || currentMode === 'listening') && !wordInput.disabled) {
+        attemptCounterDiv.textContent = `Attempts remaining: ${MAX_ATTEMPTS - incorrectAttempts}`;
+    } else {
+        attemptCounterDiv.textContent = '';
+    }
 }
-function updateProgress() { /* ... (same) ... */
-     progressDiv.textContent = `Mode: ${getModeName(currentMode)} | Progress: ${currentWordIndex + 1} / ${shuffledWords.length}`;
- }
-function getModeName(modeValue) { /* ... (same) ... */
-     switch(modeValue) { case 'review': return 'Review'; case 'dictation': return 'Dictation'; case 'listening': return 'Listening'; default: return ''; }
- }
+
+function updateProgress() {
+    const totalWords = getTotalWords();
+    progressDiv.textContent = `Mode: ${getModeName(currentMode)} | Progress: ${totalProgress + 1} / ${totalWords}`;
+}
+
+function getModeName(modeValue) {
+    switch(modeValue) {
+        case 'review': return 'Review';
+        case 'dictation': return 'Dictation';
+        case 'listening': return 'Listening';
+        default: return '';
+    }
+}
 
 // --- Event Listeners ---
-
 checkButton.addEventListener('click', handleCheckAction);
-wordInput.addEventListener('keypress', (event) => { /* ... (same) ... */
+wordInput.addEventListener('keypress', (event) => {
     if (event.key === 'Enter' && !wordInput.disabled && checkButton.style.display !== 'none') {
-        event.preventDefault(); handleCheckAction();
+        event.preventDefault();
+        handleCheckAction();
     }
 });
-speakButton.addEventListener('click', () => { /* ... (same) ... */
+speakButton.addEventListener('click', () => {
     if (currentWordIndex < shuffledWords.length) {
         speakWord(shuffledWords[currentWordIndex].word);
-        if (containerDiv.classList.contains('input-visible') && !wordInput.disabled) { wordInput.focus(); }
+        if (containerDiv.classList.contains('input-visible') && !wordInput.disabled) {
+            wordInput.focus();
+        }
     }
 });
-nextWordButton.addEventListener('click', () => { /* ... (same) ... */
-    currentWordIndex++; loadWord();
+nextWordButton.addEventListener('click', () => {
+    currentWordIndex++;
+    totalProgress++;
+    loadWord();
 });
-modeRadios.forEach(radio => { /* ... (same) ... */
+modeRadios.forEach(radio => {
     radio.addEventListener('change', (event) => {
-        currentMode = event.target.value; currentWordIndex = 0; shuffleArray(shuffledWords); loadWord();
+        currentMode = event.target.value;
+        currentWordIndex = 0;
+        totalProgress = 0; // Reset progress when changing modes
+        shuffleArray(shuffledWords);
+        loadWord();
     });
 });
 
 // --- Initialization ---
 let speechInitialized = false;
-function initializeSpeech() { /* ... (same as V4.1) ... */
+function initializeSpeech() {
     if (!speechInitialized) {
-        try { if (synth.paused) synth.resume(); const silentUtterance = new SpeechSynthesisUtterance(''); silentUtterance.volume = 0; synth.speak(silentUtterance); speechInitialized = true; console.log("Speech synthesis potentially initialized."); }
-        catch (error) { console.error("Speech synthesis initialization failed:", error); promptDiv.textContent = 'Speech synthesis could not be initialized. Audio might not work.'; }
-        finally { currentMode = document.querySelector('input[name="mode"]:checked').value; shuffleArray(shuffledWords); loadWord(); }
+        try {
+            if (synth.paused) synth.resume();
+            const silentUtterance = new SpeechSynthesisUtterance('');
+            silentUtterance.volume = 0;
+            synth.speak(silentUtterance);
+            speechInitialized = true;
+            console.log("Speech synthesis potentially initialized.");
+            const voices = synth.getVoices();
+            if (voices.length === 0) {
+                synth.onvoiceschanged = () => {
+                    const loadedVoices = synth.getVoices();
+                    if (loadedVoices.length > 0) {
+                        console.log("Voices loaded:", loadedVoices);
+                        loadWord();
+                    }
+                };
+            } else {
+                loadWord();
+            }
+        } catch (error) {
+            console.error("Speech synthesis initialization failed:", error);
+            promptDiv.textContent = 'Speech synthesis could not be initialized. Click anywhere to try again.';
+        }
     }
 }
+
 containerDiv.classList.remove('input-visible', 'attempts-visible', 'buttons-visible');
 promptDiv.textContent = 'Please select a mode and click anywhere on the page to activate audio.';
 progressDiv.textContent = `Mode: ${getModeName(currentMode)}`;
-document.body.addEventListener('click', initializeSpeech, { once: true });
+document.body.addEventListener('click', () => {
+    if (!speechInitialized) {
+        initializeSpeech();
+    }
+}, { once: true });
 setTimeout(initializeSpeech, 150);
