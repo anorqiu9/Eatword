@@ -107,6 +107,7 @@ function speakWord(text) {
         }
             //*/
     };
+        let selectedVoice = null;
      // 选择适合的语音
      if (/[\u4e00-\u9fa5]/.test(text)) {
         // 中文
@@ -116,7 +117,7 @@ function speakWord(text) {
         selectedVoice = voices.find(v => v.lang.startsWith('en') && v.localService);
       }
 
-      if (!selectedVoice.voice) {
+      if (!selectedVoice) {
         errMessage = "未找到合适语音，请确保启用了语音朗读功能";
         alert(errMessage);
         console.error(errMessage);
