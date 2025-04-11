@@ -169,7 +169,7 @@ function showResultDetails() {
 function loadWord() {
     console.log('Loading new word');
     if (currentWordIndex >= shuffledWords.length) {
-        totalProgress += shuffledWords.length; // Add completed unit’s words
+        // Do NOT increment totalProgress here; it should only increment on correct answers
         currentUnitIndex++;
         if (currentUnitIndex >= wordsData.length) {
             promptDiv.textContent = 'Congratulations! You have completed all units!';
@@ -276,12 +276,12 @@ function handleCheckAction() {
             speakWord(randomMessage);
             setTimeout(() => {
                 currentWordIndex++;
-                totalProgress++;
+                totalProgress++; // Increment only on correct answer
                 loadWord();
             }, 1500);
         } else {
             currentWordIndex++;
-            totalProgress++;
+            totalProgress++; // Increment only on correct answer
             loadWord();
         }
         return;
@@ -366,7 +366,7 @@ speakButton.addEventListener('click', () => {
 });
 nextWordButton.addEventListener('click', () => {
     currentWordIndex++;
-    totalProgress++;
+    // Do NOT increment totalProgress here since the answer was incorrect
     loadWord();
 });
 modeRadios.forEach(radio => {
