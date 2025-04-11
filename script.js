@@ -119,7 +119,7 @@ function speakWord(text) {
 
       if (!selectedVoice) {
         errMessage = "未找到合适语音，请确保启用了语音朗读功能";
-        alert(errMessage);
+        //alert(errMessage);
         console.error(errMessage);
       }
 
