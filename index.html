@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Vocabulary Practice (V4.1)</title> 
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Vocabulary Practice</h1>
+
+        <div class="mode-selection">
+            <label>Select Mode:</label>
+            <label><input type="radio" name="mode" value="review" checked> Review</label>
+            <label><input type="radio" name="mode" value="dictation"> Dictation (IPA -> Word)</label>
+            <label><input type="radio" name="mode" value="listening"> Listening (Audio -> Word)</label>
+        </div>
+
+        <div id="review-display" class="display-area">
+             <span id="word-text"></span>
+             <span id="word-syllables"></span>
+             <span id="word-pronunciation"></span>
+             <span id="word-meaning-review" style="display: none;"></span>
+        </div>
+        <div id="prompt-display" class="display-area"></div>
+
+        <div id="prompt">Please select a mode to start.</div>
+
+        <input type="text" id="word-input" placeholder="Type the word here..." autocomplete="off">
+        <div id="attempt-counter"></div>
+
+        <div id="action-buttons">
+             <button id="speak-button">Speak Again</button>
+             <button id="check-button">Check</button>
+             <button id="next-word-button" style="display: none;">Next Word</button>
+        </div>
+
+        <div id="feedback"></div>
+
+        <div id="result">
+            <p id="correct-word"></p>
+            <p id="meaning"></p>
+        </div>
+
+        <div id="progress"></div>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
