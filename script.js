@@ -37,11 +37,20 @@ let incorrectAttempts = 0;
 const MAX_ATTEMPTS = 3;
 let currentMode = 'review';
 let synth = window.speechSynthesis;
+let voices = [];
 let currentUtterance = null;
 let incorrectTimeout = null;
 let isSpeaking = false;
 const pronunciationPlaceholder = "No IPA available";
 
+    // 加载语音列表
+    function loadVoices() {
+        voices = window.speechSynthesis.getVoices();
+      }
+  
+      // 确保语音加载完成
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+  
 // --- Functions ---
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -59,42 +68,12 @@ function speakWord(text) {
         console.log('No text to speak');
         return;
     }
-
-    if (!document.hasFocus()) {
-        console.log('等待用户交互...');
-        feedbackDiv.textContent = '请点击页面任意位置以启用语音';
-        feedbackDiv.className = 'info';
-        return;
-    }
-
-    console.log(`Attempting to speak: ${text}`);
-    synth.cancel(); // Clear all pending utterances
-    isSpeaking = true;
-
-    let voices = synth.getVoices();
-    if (voices.length === 0) {
-        console.log('No voices available, waiting for voiceschanged');
-        synth.onvoiceschanged = () => {
-            voices = synth.getVoices();
-            if (voices.length > 0) {
-                synth.onvoiceschanged = null;
-                speakWord(text);
-            }
-        };
-        isSpeaking = false;
-        return;
-    }
-
     currentUtterance = new SpeechSynthesisUtterance(text);
     currentUtterance.onend = () => {
         console.log(`Finished speaking: ${text}`);
         currentUtterance = null;
         isSpeaking = false;
     };
-
-    let retryCount = 0;
-    const maxRetries = 3;
-
     currentUtterance.onerror = (event) => {
         console.error('Speech synthesis error:', event);
         /*
@@ -128,24 +107,21 @@ function speakWord(text) {
         }
             //*/
     };
+     // 选择适合的语音
+     if (/[\u4e00-\u9fa5]/.test(text)) {
+        // 中文
+        selectedVoice = voices.find(v => v.lang.startsWith('zh') && v.localService);
+      } else {
+        // 英文
+        selectedVoice = voices.find(v => v.lang.startsWith('en') && v.localService);
+      }
 
-    let selectedVoice = voices.find(voice => voice.lang.startsWith('zh-')) ||
-                       voices.find(voice => voice.lang.startsWith('zh_')) ||
-                       voices.find(voice => voice.lang.startsWith('en-')) ||
-                       voices.find(voice => voice.lang.startsWith('en_'));
-
-    if (selectedVoice) {
-        currentUtterance.voice = selectedVoice;
-        currentUtterance.pitch = 1.1;
-        currentUtterance.rate = 0.8;
-        console.log(`Using voice: ${selectedVoice.name}`);
-    } else {
-        console.log('No preferred voice found, using default');
-    }
-
-    currentUtterance.volume = 1;
+      if (!selectedVoice.voice) {
+        console.error("未找到合适语音，请确保启用了语音朗读功能");
+      }
 
     try {
+        currentUtterance.voice = selectedVoice;
         synth.speak(currentUtterance);
         console.log(`Speaking: ${text}`);
     } catch (error) {
