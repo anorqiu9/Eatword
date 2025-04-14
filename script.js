@@ -1,24 +1,141 @@
+// --- Data Loading ---
+let wordsData = [];
+
+// Fetch vocabulary data from JSON file
+async function loadVocabularyData() {
+    // Show loading indicator
+    document.querySelector('.container').innerHTML = `
+        <div class="loading">
+            <div class="loading-spinner"></div>
+            <p>Loading vocabulary data...</p>
+        </div>
+    `;
+
+    try {
+        const response = await fetch('words.json');
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        wordsData = data.units;
+        console.log(`Vocabulary data loaded successfully (version ${data.version}, last updated ${data.lastUpdated})`);
+
+        // Rebuild the UI
+        rebuildUI();
+
+        // Initialize the app
+        initializeApp();
+    } catch (error) {
+        console.error('Error loading vocabulary data:', error);
+        document.querySelector('.container').innerHTML = `
+            <h1>Error Loading Data</h1>
+            <p>Sorry, there was a problem loading the vocabulary data. Please try refreshing the page.</p>
+            <p>Error details: ${error.message}</p>
+        `;
+    }
+}
+
 // --- DOM References ---
-const containerDiv = document.querySelector('.container');
-const wordInput = document.getElementById('word-input');
-const checkButton = document.getElementById('check-button');
-const speakButton = document.getElementById('speak-button');
-const nextWordButton = document.getElementById('next-word-button');
-const feedbackDiv = document.getElementById('feedback');
-const resultDiv = document.getElementById('result');
-const correctWordP = document.getElementById('correct-word');
-const meaningP = document.getElementById('meaning');
-const progressDiv = document.getElementById('progress');
-const promptDiv = document.getElementById('prompt');
-const reviewDisplayDiv = document.getElementById('review-display');
-const wordTextSpan = document.getElementById('word-text');
-const wordSyllablesSpan = document.getElementById('word-syllables');
-const wordPronunciationSpan = document.getElementById('word-pronunciation');
-const wordMeaningReviewSpan = document.getElementById('word-meaning-review');
-const promptDisplayDiv = document.getElementById('prompt-display');
-const attemptCounterDiv = document.getElementById('attempt-counter');
-const modeRadios = document.querySelectorAll('input[name="mode"]');
-const actionButtonsDiv = document.getElementById('action-buttons');
+let containerDiv, wordInput, checkButton, speakButton, nextWordButton, feedbackDiv;
+let resultDiv, correctWordP, meaningP, progressDiv, promptDiv, reviewDisplayDiv;
+let wordTextSpan, wordSyllablesSpan, wordPronunciationSpan, wordMeaningReviewSpan;
+let promptDisplayDiv, attemptCounterDiv, modeRadios, actionButtonsDiv;
+
+// Function to rebuild the UI after loading data
+function rebuildUI() {
+    // Restore the original HTML structure
+    document.querySelector('.container').innerHTML = `
+        <h1>Vocabulary Practice</h1>
+
+        <div class="mode-selection">
+            <label>Select Mode:</label>
+            <label><input type="radio" name="mode" value="review" checked> Review</label>
+            <label><input type="radio" name="mode" value="dictation"> Dictation (IPA -> Word)</label>
+            <label><input type="radio" name="mode" value="listening"> Listening (Audio -> Word)</label>
+        </div>
+
+        <div id="review-display" class="display-area">
+            <span id="word-text"></span>
+            <span id="word-syllables"></span>
+            <span id="word-pronunciation"></span>
+            <span id="word-meaning-review" style="display: none;"></span>
+        </div>
+        <div id="prompt-display" class="display-area"></div>
+
+        <div id="prompt">Please select a mode to start.</div>
+
+        <input type="text" id="word-input" placeholder="Type the word here..." autocomplete="off">
+        <div id="attempt-counter"></div>
+
+        <div id="action-buttons">
+            <button id="speak-button">Speak Again</button>
+            <button id="check-button">Check</button>
+            <button id="next-word-button" style="display: none;">Next Word</button>
+        </div>
+
+        <div id="feedback"></div>
+
+        <div id="result">
+            <p id="correct-word"></p>
+            <p id="meaning"></p>
+        </div>
+
+        <div id="progress"></div>
+    `;
+
+    // Re-initialize DOM references
+    containerDiv = document.querySelector('.container');
+    wordInput = document.getElementById('word-input');
+    checkButton = document.getElementById('check-button');
+    speakButton = document.getElementById('speak-button');
+    nextWordButton = document.getElementById('next-word-button');
+    feedbackDiv = document.getElementById('feedback');
+    resultDiv = document.getElementById('result');
+    correctWordP = document.getElementById('correct-word');
+    meaningP = document.getElementById('meaning');
+    progressDiv = document.getElementById('progress');
+    promptDiv = document.getElementById('prompt');
+    reviewDisplayDiv = document.getElementById('review-display');
+    wordTextSpan = document.getElementById('word-text');
+    wordSyllablesSpan = document.getElementById('word-syllables');
+    wordPronunciationSpan = document.getElementById('word-pronunciation');
+    wordMeaningReviewSpan = document.getElementById('word-meaning-review');
+    promptDisplayDiv = document.getElementById('prompt-display');
+    attemptCounterDiv = document.getElementById('attempt-counter');
+    modeRadios = document.querySelectorAll('input[name="mode"]');
+    actionButtonsDiv = document.getElementById('action-buttons');
+
+    // Re-attach event listeners
+    checkButton.addEventListener('click', handleCheckAction);
+    wordInput.addEventListener('keypress', (event) => {
+        if (event.key === 'Enter' && !wordInput.disabled && checkButton.style.display !== 'none') {
+            event.preventDefault();
+            handleCheckAction();
+        }
+    });
+    speakButton.addEventListener('click', () => {
+        if (currentWordIndex < shuffledWords.length) {
+            speakWord(shuffledWords[currentWordIndex].word);
+            if (containerDiv.classList.contains('input-visible') && !wordInput.disabled) {
+                wordInput.focus();
+            }
+        }
+    });
+    nextWordButton.addEventListener('click', () => {
+        currentWordIndex++;
+        // Do NOT increment totalProgress here since the answer was incorrect
+        loadWord();
+    });
+    modeRadios.forEach(radio => {
+        radio.addEventListener('change', (event) => {
+            currentMode = event.target.value;
+            currentWordIndex = 0;
+            totalProgress = 0; // Reset progress when changing modes
+            shuffleArray(shuffledWords);
+            loadWord();
+        });
+    });
+}
 
 // --- Congratulation Messages ---
 const congratulationMessages = [
@@ -26,11 +143,10 @@ const congratulationMessages = [
     "做得好！", "太棒了！", "非常好！", "完美！", "加鸡腿", "真厉害！", "你真牛!", "太厉害了!"
 ];
 
-// Initialize unit index and shuffled words (wordsData comes from words.js)
+// Variables for tracking progress
 let currentUnitIndex = 0;
-let shuffledWords = [...wordsData[currentUnitIndex].words];
+let shuffledWords = [];
 let totalProgress = 0; // Track total words completed across units
-promptDiv.textContent = 'Please select a mode to start.';
 
 let currentWordIndex = 0;
 let incorrectAttempts = 0;
@@ -47,10 +163,10 @@ const pronunciationPlaceholder = "No IPA available";
     function loadVoices() {
         voices = window.speechSynthesis.getVoices();
       }
-  
+
       // 确保语音加载完成
       window.speechSynthesis.onvoiceschanged = loadVoices;
-  
+
 // --- Functions ---
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -327,36 +443,7 @@ function getModeName(modeValue) {
     }
 }
 
-// --- Event Listeners ---
-checkButton.addEventListener('click', handleCheckAction);
-wordInput.addEventListener('keypress', (event) => {
-    if (event.key === 'Enter' && !wordInput.disabled && checkButton.style.display !== 'none') {
-        event.preventDefault();
-        handleCheckAction();
-    }
-});
-speakButton.addEventListener('click', () => {
-    if (currentWordIndex < shuffledWords.length) {
-        speakWord(shuffledWords[currentWordIndex].word);
-        if (containerDiv.classList.contains('input-visible') && !wordInput.disabled) {
-            wordInput.focus();
-        }
-    }
-});
-nextWordButton.addEventListener('click', () => {
-    currentWordIndex++;
-    // Do NOT increment totalProgress here since the answer was incorrect
-    loadWord();
-});
-modeRadios.forEach(radio => {
-    radio.addEventListener('change', (event) => {
-        currentMode = event.target.value;
-        currentWordIndex = 0;
-        totalProgress = 0; // Reset progress when changing modes
-        shuffleArray(shuffledWords);
-        loadWord();
-    });
-});
+// Event listeners are now attached in the rebuildUI() function
 
 // --- Initialization ---
 let speechInitialized = false;
@@ -388,12 +475,23 @@ function initializeSpeech() {
     }
 }
 
-containerDiv.classList.remove('input-visible', 'attempts-visible', 'buttons-visible');
-promptDiv.textContent = 'Please select a mode and click anywhere on the page to activate audio.';
-progressDiv.textContent = `Mode: ${getModeName(currentMode)}`;
-document.body.addEventListener('click', () => {
-    if (!speechInitialized) {
-        initializeSpeech();
-    }
-}, { once: true });
-setTimeout(initializeSpeech, 150);
+function initializeApp() {
+    // Initialize unit index and shuffled words
+    currentUnitIndex = 0;
+    shuffledWords = [...wordsData[currentUnitIndex].words];
+    totalProgress = 0; // Track total words completed across units
+    promptDiv.textContent = 'Please select a mode to start.';
+
+    containerDiv.classList.remove('input-visible', 'attempts-visible', 'buttons-visible');
+    promptDiv.textContent = 'Please select a mode and click anywhere on the page to activate audio.';
+    progressDiv.textContent = `Mode: ${getModeName(currentMode)}`;
+    document.body.addEventListener('click', () => {
+        if (!speechInitialized) {
+            initializeSpeech();
+        }
+    }, { once: true });
+    setTimeout(initializeSpeech, 150);
+}
+
+// Start loading data when the page loads
+document.addEventListener('DOMContentLoaded', loadVocabularyData);
