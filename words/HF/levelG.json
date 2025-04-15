@@ -1,0 +1,133 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2025-04-14",
+  "level": "HFG",
+  "units": [
+    {
+      "unit": "Unit 1",
+      "words": [
+        {"word": "lift", "syllables": "lift", "pronunciation": "/lɪft/", "meaning": "举起"},
+        {"word": "save", "syllables": "save", "pronunciation": "/seɪv/", "meaning": "救"},
+        {"word": "swim", "syllables": "swim", "pronunciation": "/swɪm/", "meaning": "游泳"},
+        {"word": "climb", "syllables": "climb", "pronunciation": "/klaɪm/", "meaning": "爬"},
+        {"word": "wonderful", "syllables": "won / der / ful", "pronunciation": "/ˈwʌndərfəl/", "meaning": "精彩的"},
+        {"word": "awful", "syllables": "aw / ful", "pronunciation": "/ˈɔːfəl/", "meaning": "糟糕的"},
+        {"word": "evil", "syllables": "e / vil", "pronunciation": "/ˈiːvəl/", "meaning": "邪恶的"},
+        {"word": "weak", "syllables": "weak", "pronunciation": "/wiːk/", "meaning": "虚弱的"},
+        {"word": "strong", "syllables": "strong", "pronunciation": "/strɔːŋ/", "meaning": "强壮的"},
+        {"word": "quickly", "syllables": "quick / ly", "pronunciation": "/ˈkwɪkli/", "meaning": "快速地"},
+        {"word": "slowly", "syllables": "slow / ly", "pronunciation": "/ˈsloʊli/", "meaning": "缓慢地"},
+        {"word": "brave", "syllables": "brave", "pronunciation": "/breɪv/", "meaning": "勇敢的"},
+        {"word": "cowardly", "syllables": "cow / ard / ly", "pronunciation": "/ˈkaʊərdli/", "meaning": "懦弱的"},
+        {"word": "loudly", "syllables": "loud / ly", "pronunciation": "/ˈlaʊdli/", "meaning": "大声地"},
+        {"word": "quietly", "syllables": "qui / et / ly", "pronunciation": "/ˈkwaɪətli/", "meaning": "安静地"},
+        {"word": "horrible", "syllables": "hor / ri / ble", "pronunciation": "/ˈhɔːrəbəl/", "meaning": "可怕的"},
+        {"word": "amazing", "syllables": "a / ma / zing", "pronunciation": "/əˈmeɪzɪŋ/", "meaning": "惊奇的"}
+      ]
+    },
+    {
+      "unit": "Unit 2",
+      "words": [
+        {"word": "bank", "syllables": "bank", "pronunciation": "/bæŋk/", "meaning": "银行"},
+        {"word": "library", "syllables": "li / bra / ry", "pronunciation": "/ˈlaɪbrɛri/", "meaning": "图书馆"},
+        {"word": "supermarket", "syllables": "su / per / mar / ket", "pronunciation": "/ˈsuːpərˌmɑːrkɪt/", "meaning": "超市"},
+        {"word": "post office", "syllables": "post · of / fice", "pronunciation": "/poʊst ˈɑːfɪs/", "meaning": "邮局"},
+        {"word": "hospital", "syllables": "hos / pi / tal", "pronunciation": "/ˈhɑːspɪtəl/", "meaning": "医院"},
+        {"word": "turn right", "syllables": "turn · right", "pronunciation": "/tɜːrn raɪt/", "meaning": "右转"},
+        {"word": "cross the street", "syllables": "cross · the · street", "pronunciation": "/krɔːs ðə striːt/", "meaning": "过马路"},
+        {"word": "go straight", "syllables": "go · straight", "pronunciation": "/ɡoʊ streɪt/", "meaning": "直走"},
+        {"word": "subway", "syllables": "sub / way", "pronunciation": "/ˈsʌbˌweɪ/", "meaning": "地铁"},
+        {"word": "movie theater", "syllables": "mo / vie · the / a / ter", "pronunciation": "/ˈmuːvi ˈθiːətər/", "meaning": "电影院"},
+        {"word": "go north", "syllables": "go · north", "pronunciation": "/ɡoʊ nɔːrθ/", "meaning": "向北走"},
+        {"word": "turn left", "syllables": "turn · left", "pronunciation": "/tɜːrn lɛft/", "meaning": "左转"},
+        {"word": "traffic light", "syllables": "traf / fic · light", "pronunciation": "/ˈtræfɪk laɪt/", "meaning": "交通灯"},
+        {"word": "police station", "syllables": "po / lice · sta / tion", "pronunciation": "/pəˈlis ˈsteɪʃən/", "meaning": "警察局"},
+        {"word": "mall", "syllables": "mall", "pronunciation": "/mɔːl/", "meaning": "购物中心"},
+        {"word": "bus station", "syllables": "bus · sta / tion", "pronunciation": "/bʌs ˈsteɪʃən/", "meaning": "公交车站"}
+      ]
+    },
+    {
+      "unit": "Unit 3",
+      "words": [
+        {"word": "firefighter", "syllables": "fire / figh / ter", "pronunciation": "/ˈfaɪərˌfaɪtər/", "meaning": "消防员"},
+        {"word": "photographer", "syllables": "pho / to / gra / pher", "pronunciation": "/fəˈtɑːɡrəfər/", "meaning": "摄影师"},
+        {"word": "doctor", "syllables": "doc / tor", "pronunciation": "/ˈdɑːktər/", "meaning": "医生"},
+        {"word": "pilot", "syllables": "pi / lot", "pronunciation": "/ˈpaɪlət/", "meaning": "飞行员"},
+        {"word": "chef", "syllables": "chef", "pronunciation": "/ʃɛf/", "meaning": "厨师"},
+        {"word": "salesperson", "syllables": "sales / per / son", "pronunciation": "/ˈseɪlzˌpɜːrsən/", "meaning": "销售员"},
+        {"word": "dentist", "syllables": "den / tist", "pronunciation": "/ˈdɛntɪst/", "meaning": "牙医"},
+        {"word": "hairdresser", "syllables": "hair / dres / ser", "pronunciation": "/ˈhɛrˌdrɛsər/", "meaning": "理发师"},
+        {"word": "police officer", "syllables": "po / lice · of / fi / cer", "pronunciation": "/pəˈlis ˈɑːfɪsər/", "meaning": "警察"},
+        {"word": "vet", "syllables": "vet", "pronunciation": "/vɛt/", "meaning": "兽医"},
+        {"word": "businessman", "syllables": "busi / ness / man", "pronunciation": "/ˈbɪznəsˌmæn/", "meaning": "商人"},
+        {"word": "nurse", "syllables": "nurse", "pronunciation": "/nɜːrs/", "meaning": "护士"},
+        {"word": "bus driver", "syllables": "bus · dri / ver", "pronunciation": "/bʌs ˈdraɪvər/", "meaning": "公交车司机"},
+        {"word": "cook food", "syllables": "cook · food", "pronunciation": "/kʊk fuːd/", "meaning": "做饭"},
+        {"word": "fix teeth", "syllables": "fix · teeth", "pronunciation": "/fɪks tiːθ/", "meaning": "修牙"}
+      ]
+    },
+    {
+      "unit": "Unit 4",
+      "words": [
+        {"word": "dolphin", "syllables": "dol / phin", "pronunciation": "/ˈdɑːlfɪn/", "meaning": "海豚"},
+        {"word": "seahorse", "syllables": "sea / horse", "pronunciation": "/ˈsiːhɔːrs/", "meaning": "海马"},
+        {"word": "crab", "syllables": "crab", "pronunciation": "/kræb/", "meaning": "螃蟹"},
+        {"word": "lobster", "syllables": "lob / ster", "pronunciation": "/ˈlɑːbstər/", "meaning": "龙虾"},
+        {"word": "eel", "syllables": "eel", "pronunciation": "/iːl/", "meaning": "鳗鱼"},
+        {"word": "coral reef", "syllables": "co / ral · reef", "pronunciation": "/ˈkɔːrəl riːf/", "meaning": "珊瑚礁"},
+        {"word": "scale", "syllables": "scale", "pronunciation": "/skeɪl/", "meaning": "鳞片"},
+        {"word": "gill", "syllables": "gill", "pronunciation": "/ɡɪl/", "meaning": "腮"},
+        {"word": "octopus", "syllables": "oc / to / pus", "pronunciation": "/ˈɑːktəpəs/", "meaning": "章鱼"},
+        {"word": "flipper", "syllables": "flip / per", "pronunciation": "/ˈflɪpər/", "meaning": "鳍"},
+        {"word": "seal", "syllables": "seal", "pronunciation": "/siːl/", "meaning": "海豹"},
+        {"word": "ocean", "syllables": "o / cean", "pronunciation": "/ˈoʊʃən/", "meaning": "海洋"},
+        {"word": "cave", "syllables": "cave", "pronunciation": "/keɪv/", "meaning": "洞穴"},
+        {"word": "shark", "syllables": "shark", "pronunciation": "/ʃɑːrk/", "meaning": "鲨鱼"},
+        {"word": "sand", "syllables": "sand", "pronunciation": "/sænd/", "meaning": "沙子"},
+        {"word": "turtle", "syllables": "tur / tle", "pronunciation": "/ˈtɜːrtəl/", "meaning": "乌龟"}
+      ]
+    },
+    {
+      "unit": "Unit 5",
+      "words": [
+        {"word": "push-up", "syllables": "push · up", "pronunciation": "/ˈpʊʃ ʌp/", "meaning": "俯卧撑"},
+        {"word": "squat", "syllables": "squat", "pronunciation": "/skwɑːt/", "meaning": "深蹲"},
+        {"word": "sit-up", "syllables": "sit · up", "pronunciation": "/ˈsɪt ʌp/", "meaning": "仰卧起坐"},
+        {"word": "pull-up", "syllables": "pull · up", "pronunciation": "/ˈpʊl ʌp/", "meaning": "引体向上"},
+        {"word": "rest", "syllables": "rest", "pronunciation": "/rɛst/", "meaning": "休息"},
+        {"word": "healthy", "syllables": "heal / thy", "pronunciation": "/ˈhɛlθi/", "meaning": "健康的"},
+        {"word": "junk food", "syllables": "junk · food", "pronunciation": "/dʒʌŋk fuːd/", "meaning": "垃圾食品"},
+        {"word": "do exercise", "syllables": "do · ex / er / cise", "pronunciation": "/duː ˈɛksərˌsaɪz/", "meaning": "锻炼"},
+        {"word": "length", "syllables": "length", "pronunciation": "/lɛŋkθ/", "meaning": "长度"},
+        {"word": "kilometer", "syllables": "ki / lo / me / ter", "pronunciation": "/kɪˈlɑːmɪtər/", "meaning": "公里"},
+        {"word": "jumping jacks", "syllables": "jum / ping · jacks", "pronunciation": "/ˈdʒʌmpɪŋ dʒæks/", "meaning": "开合跳"},
+        {"word": "crunch", "syllables": "crunch", "pronunciation": "/krʌntʃ/", "meaning": "卷腹"},
+        {"word": "cycling", "syllables": "cy / cling", "pronunciation": "/ˈsaɪklɪŋ/", "meaning": "骑自行车"},
+        {"word": "lap", "syllables": "lap", "pronunciation": "/læp/", "meaning": "圈"},
+        {"word": "enough", "syllables": "e / nough", "pronunciation": "/ɪˈnʌf/", "meaning": "足够"},
+        {"word": "go to bed early", "syllables": "go · to · bed · ear / ly", "pronunciation": "/ɡoʊ tə bɛd ˈɜːrli/", "meaning": "早睡"}
+      ]
+    },
+    {
+      "unit": "Unit 6",
+      "words": [
+        {"word": "ferris wheel", "syllables": "fer / ris · wheel", "pronunciation": "/ˈfɛrɪs wiːl/", "meaning": "摩天轮"},
+        {"word": "carousel", "syllables": "ca / rou / sel", "pronunciation": "/ˌkærəˈsɛl/", "meaning": "旋转木马"},
+        {"word": "haunted house", "syllables": "haun / ted · house", "pronunciation": "/ˈhɔːntɪd haʊs/", "meaning": "鬼屋"},
+        {"word": "roller coaster", "syllables": "rol / ler · coas / ter", "pronunciation": "/ˈroʊlər ˈkoʊstər/", "meaning": "过山车"},
+        {"word": "tea cup", "syllables": "tea · cup", "pronunciation": "/tiː kʌp/", "meaning": "茶杯旋转"},
+        {"word": "wait in line", "syllables": "wait · in · line", "pronunciation": "/weɪt ɪn laɪn/", "meaning": "排队"},
+        {"word": "exit", "syllables": "ex / it", "pronunciation": "/ˈɛɡzɪt/", "meaning": "出口"},
+        {"word": "ticket booth", "syllables": "tic / ket · booth", "pronunciation": "/ˈtɪkɪt buːθ/", "meaning": "售票亭"},
+        {"word": "bumper car", "syllables": "bum / per · car", "pronunciation": "/ˈbʌmpər kɑːr/", "meaning": "碰碰车"},
+        {"word": "ride", "syllables": "ride", "pronunciation": "/raɪd/", "meaning": "游乐设施"},
+        {"word": "flying swing", "syllables": "fly / ing · swing", "pronunciation": "/ˈflaɪɪŋ swɪŋ/", "meaning": "空中飞椅"},
+        {"word": "gate", "syllables": "gate", "pronunciation": "/ɡeɪt/", "meaning": "大门"},
+        {"word": "seat belt", "syllables": "seat · belt", "pronunciation": "/siːt bɛlt/", "meaning": "安全带"},
+        {"word": "log flume", "syllables": "log · flume", "pronunciation": "/lɔːɡ fluːm/", "meaning": "激流勇进"},
+        {"word": "river rapid", "syllables": "ri / ver · ra / pid", "pronunciation": "/ˈrɪvər ˈræpɪd/", "meaning": "急流漂流"},
+        {"word": "pirate ship", "syllables": "pi / rate · ship", "pronunciation": "/ˈpaɪrət ʃɪp/", "meaning": "海盗船"}
+      ]
+    }
+  ]
+}

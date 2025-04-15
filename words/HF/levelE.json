@@ -1,0 +1,134 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2025-04-14",
+  "level": "HFE",
+  "units": [
+    {
+      "unit": "Unit 1",
+      "words": [
+        {"word": "naughty", "syllables": "naugh / ty", "pronunciation": "/ˈnɔːti/", "meaning": "淘气的"},
+        {"word": "shy", "syllables": "shy", "pronunciation": "/ʃaɪ/", "meaning": "害羞的"},
+        {"word": "funny", "syllables": "fun / ny", "pronunciation": "/ˈfʌni/", "meaning": "有趣的"},
+        {"word": "noisy", "syllables": "noi / sy", "pronunciation": "/ˈnɔɪzi/", "meaning": "吵闹的"},
+        {"word": "mean", "syllables": "mean", "pronunciation": "/miːn/", "meaning": "刻薄的"},
+        {"word": "hairy", "syllables": "hai / ry", "pronunciation": "/ˈhɛri/", "meaning": "多毛的"},
+        {"word": "bald", "syllables": "bald", "pronunciation": "/bɔːld/", "meaning": "秃头的"},
+        {"word": "pretty", "syllables": "pret / ty", "pronunciation": "/ˈprɪti/", "meaning": "漂亮的"},
+        {"word": "ugly", "syllables": "ug / ly", "pronunciation": "/ˈʌɡli/", "meaning": "丑陋的"},
+        {"word": "clean", "syllables": "clean", "pronunciation": "/kliːn/", "meaning": "干净的"},
+        {"word": "dirty", "syllables": "dir / ty", "pronunciation": "/ˈdɜːrti/", "meaning": "脏的"},
+        {"word": "scary", "syllables": "sca / ry", "pronunciation": "/ˈskɛri/", "meaning": "可怕的"},
+        {"word": "brown", "syllables": "brown", "pronunciation": "/braʊn/", "meaning": "棕色的"},
+        {"word": "friendly", "syllables": "friend / ly", "pronunciation": "/ˈfrɛndli/", "meaning": "友好的"},
+        {"word": "tall", "syllables": "tall", "pronunciation": "/tɔːl/", "meaning": "高的"},
+        {"word": "long", "syllables": "long", "pronunciation": "/lɔːŋ/", "meaning": "长的"}
+      ]
+    },
+    {
+      "unit": "Unit 2",
+      "words": [
+        {"word": "lake", "syllables": "lake", "pronunciation": "/leɪk/", "meaning": "湖"},
+        {"word": "desert", "syllables": "de / sert", "pronunciation": "/ˈdɛzərt/", "meaning": "沙漠"},
+        {"word": "countryside", "syllables": "coun / try / side", "pronunciation": "/ˈkʌntriˌsaɪd/", "meaning": "乡村"},
+        {"word": "Monday", "syllables": "Mon / day", "pronunciation": "/ˈmʌndeɪ/", "meaning": "星期一"},
+        {"word": "Tuesday", "syllables": "Tues / day", "pronunciation": "/ˈtjuːzdeɪ/", "meaning": "星期二"},
+        {"word": "Wednesday", "syllables": "Wed / nes / day", "pronunciation": "/ˈwɛnzdeɪ/", "meaning": "星期三"},
+        {"word": "Thursday", "syllables": "Thurs / day", "pronunciation": "/ˈθɜːrzdeɪ/", "meaning": "星期四"},
+        {"word": "Friday", "syllables": "Fri / day", "pronunciation": "/ˈfraɪdeɪ/", "meaning": "星期五"},
+        {"word": "Saturday", "syllables": "Sa / tur / day", "pronunciation": "/ˈsætərdeɪ/", "meaning": "星期六"},
+        {"word": "Sunday", "syllables": "Sun / day", "pronunciation": "/ˈsʌndeɪ/", "meaning": "星期日"},
+        {"word": "morning", "syllables": "mor / ning", "pronunciation": "/ˈmɔːrnɪŋ/", "meaning": "早晨"},
+        {"word": "evening", "syllables": "eve / ning", "pronunciation": "/ˈiːvnɪŋ/", "meaning": "晚上"},
+        {"word": "night", "syllables": "night", "pronunciation": "/naɪt/", "meaning": "夜晚"},
+        {"word": "beach", "syllables": "beach", "pronunciation": "/biːtʃ/", "meaning": "海滩"},
+        {"word": "park", "syllables": "park", "pronunciation": "/pɑːrk/", "meaning": "公园"},
+        {"word": "mountain", "syllables": "moun / tain", "pronunciation": "/ˈmaʊntən/", "meaning": "山"}
+      ]
+    },
+    {
+      "unit": "Unit 3",
+      "words": [
+        {"word": "have dinner", "syllables": "have · din / ner", "pronunciation": "/hæv ˈdɪnər/", "meaning": "吃晚饭"},
+        {"word": "play with friends", "syllables": "play · with · friends", "pronunciation": "/pleɪ wɪθ frɛndz/", "meaning": "和朋友玩"},
+        {"word": "do homework", "syllables": "do · home / work", "pronunciation": "/duː ˈhoʊmwɜːrk/", "meaning": "做作业"},
+        {"word": "go to bed", "syllables": "go · to · bed", "pronunciation": "/ɡoʊ tə bɛd/", "meaning": "上床睡觉"},
+        {"word": "play sports", "syllables": "play · sports", "pronunciation": "/pleɪ spɔːrts/", "meaning": "进行体育运动"},
+        {"word": "geography", "syllables": "ge / o / gra / phy", "pronunciation": "/dʒiˈɑːɡrəfi/", "meaning": "地理"},
+        {"word": "P.E.", "syllables": "P · E", "pronunciation": "/ˌpiː ˈiː/", "meaning": "体育"},
+        {"word": "math", "syllables": "math", "pronunciation": "/mæθ/", "meaning": "数学"},
+        {"word": "science", "syllables": "sci / ence", "pronunciation": "/ˈsaɪəns/", "meaning": "科学"},
+        {"word": "art", "syllables": "art", "pronunciation": "/ɑːrt/", "meaning": "艺术"},
+        {"word": "English", "syllables": "Eng / lish", "pronunciation": "/ˈɪŋɡlɪʃ/", "meaning": "英语"},
+        {"word": "have breakfast", "syllables": "have · break / fast", "pronunciation": "/hæv ˈbrɛkfəst/", "meaning": "吃早餐"},
+        {"word": "play computer games", "syllables": "play · com / pu / ter · games", "pronunciation": "/pleɪ kəmˈpjuːtər ɡeɪmz/", "meaning": "玩电脑游戏"},
+        {"word": "have lunch", "syllables": "have · lunch", "pronunciation": "/hæv lʌntʃ/", "meaning": "吃午饭"},
+        {"word": "go shopping", "syllables": "go · shop / ping", "pronunciation": "/ɡoʊ ˈʃɑːpɪŋ/", "meaning": "购物"},
+        {"word": "swim", "syllables": "swim", "pronunciation": "/swɪm/", "meaning": "游泳"}
+      ]
+    },
+    {
+      "unit": "Unit 4",
+      "words": [
+        {"word": "windy", "syllables": "win / dy", "pronunciation": "/ˈwɪndi/", "meaning": "有风的"},
+        {"word": "rainy", "syllables": "rai / ny", "pronunciation": "/ˈreɪni/", "meaning": "下雨的"},
+        {"word": "sunny", "syllables": "sun / ny", "pronunciation": "/ˈsʌni/", "meaning": "晴朗的"},
+        {"word": "snowy", "syllables": "sno / wy", "pronunciation": "/ˈsnoʊi/", "meaning": "下雪的"},
+        {"word": "stormy", "syllables": "stor / my", "pronunciation": "/ˈstɔːrmi/", "meaning": "暴风雨的"},
+        {"word": "scarf", "syllables": "scarf", "pronunciation": "/skɑːrf/", "meaning": "围巾"},
+        {"word": "earmuffs", "syllables": "ear / muffs", "pronunciation": "/ˈɪrˌmʌfs/", "meaning": "耳罩"},
+        {"word": "jacket", "syllables": "jac / ket", "pronunciation": "/ˈdʒækɪt/", "meaning": "夹克"},
+        {"word": "sandals", "syllables": "san / dals", "pronunciation": "/ˈsændəlz/", "meaning": "凉鞋"},
+        {"word": "rain boots", "syllables": "rain · boots", "pronunciation": "/reɪn buːts/", "meaning": "雨靴"},
+        {"word": "sunblock", "syllables": "sun / block", "pronunciation": "/ˈsʌnˌblɑːk/", "meaning": "防晒霜"},
+        {"word": "umbrella", "syllables": "um / brel / la", "pronunciation": "/ʌmˈbrɛlə/", "meaning": "伞"},
+        {"word": "coat", "syllables": "coat", "pronunciation": "/koʊt/", "meaning": "外套"},
+        {"word": "gloves", "syllables": "gloves", "pronunciation": "/ɡlʌvz/", "meaning": "手套"},
+        {"word": "sunglasses", "syllables": "sun / glas / ses", "pronunciation": "/ˈsʌnˌɡlæsɪz/", "meaning": "太阳镜"},
+        {"word": "warm", "syllables": "warm", "pronunciation": "/wɔːrm/", "meaning": "温暖的"}
+      ]
+    },
+    {
+      "unit": "Unit 5",
+      "words": [
+        {"word": "blow up balloons", "syllables": "blow · up · bal / loons", "pronunciation": "/bloʊ ʌp bəˈluːnz/", "meaning": "吹气球"},
+        {"word": "watch a juggler", "syllables": "watch · a · jug / gler", "pronunciation": "/wɑːtʃ ə ˈdʒʌɡlər/", "meaning": "看杂耍"},
+        {"word": "blow out candles", "syllables": "blow · out · can / dles", "pronunciation": "/bloʊ aʊt ˈkændəlz/", "meaning": "吹蜡烛"},
+        {"word": "hang streamers", "syllables": "hang · strea / mers", "pronunciation": "/hæŋ ˈstriːmərz/", "meaning": "挂彩带"},
+        {"word": "wrap presents", "syllables": "wrap · pre / sents", "pronunciation": "/ræp ˈprɛzənts/", "meaning": "包礼物"},
+        {"word": "January", "syllables": "Ja / nu / a / ry", "pronunciation": "/ˈdʒænjuˌɛri/", "meaning": "一月"},
+        {"word": "February", "syllables": "Feb / ru / a / ry", "pronunciation": "/ˈfɛbruˌɛri/", "meaning": "二月"},
+        {"word": "March", "syllables": "March", "pronunciation": "/mɑːrtʃ/", "meaning": "三月"},
+        {"word": "April", "syllables": "A / pril", "pronunciation": "/ˈeɪprəl/", "meaning": "四月"},
+        {"word": "May", "syllables": "May", "pronunciation": "/meɪ/", "meaning": "五月"},
+        {"word": "June", "syllables": "June", "pronunciation": "/dʒuːn/", "meaning": "六月"},
+        {"word": "July", "syllables": "Ju / ly", "pronunciation": "/dʒuˈlaɪ/", "meaning": "七月"},
+        {"word": "August", "syllables": "Au / gust", "pronunciation": "/ˈɔːɡəst/", "meaning": "八月"},
+        {"word": "September", "syllables": "Sep / tem / ber", "pronunciation": "/sɛpˈtɛmbər/", "meaning": "九月"},
+        {"word": "October", "syllables": "Oc / to / ber", "pronunciation": "/ɑːkˈtoʊbər/", "meaning": "十月"},
+        {"word": "November", "syllables": "No / vem / ber", "pronunciation": "/noʊˈvɛmbər/", "meaning": "十一月"},
+        {"word": "December", "syllables": "De / cem / ber", "pronunciation": "/dɪˈsɛmbər/", "meaning": "十二月"}
+      ]
+    },
+    {
+      "unit": "Unit 6",
+      "words": [
+        {"word": "curry", "syllables": "cur / ry", "pronunciation": "/ˈkɜːri/", "meaning": "咖喱"},
+        {"word": "spaghetti", "syllables": "spa / ghet / ti", "pronunciation": "/spəˈɡɛti/", "meaning": "意大利面"},
+        {"word": "soup", "syllables": "soup", "pronunciation": "/suːp/", "meaning": "汤"},
+        {"word": "pancake", "syllables": "pan / cake", "pronunciation": "/ˈpænˌkeɪk/", "meaning": "煎饼"},
+        {"word": "napkin", "syllables": "nap / kin", "pronunciation": "/ˈnæpkɪn/", "meaning": "餐巾"},
+        {"word": "waitress", "syllables": "wait / ress", "pronunciation": "/ˈweɪtrəs/", "meaning": "女服务员"},
+        {"word": "spoon", "syllables": "spoon", "pronunciation": "/spuːn/", "meaning": "勺子"},
+        {"word": "menu", "syllables": "me / nu", "pronunciation": "/ˈmɛnjuː/", "meaning": "菜单"},
+        {"word": "sour", "syllables": "sour", "pronunciation": "/saʊər/", "meaning": "酸的"},
+        {"word": "sweet", "syllables": "sweet", "pronunciation": "/swiːt/", "meaning": "甜的"},
+        {"word": "salty", "syllables": "sal / ty", "pronunciation": "/ˈsɔːlti/", "meaning": "咸的"},
+        {"word": "steak", "syllables": "steak", "pronunciation": "/steɪk/", "meaning": "牛排"},
+        {"word": "delicious", "syllables": "de / li / cious", "pronunciation": "/dɪˈlɪʃəs/", "meaning": "美味的"},
+        {"word": "chopsticks", "syllables": "chop / sticks", "pronunciation": "/ˈtʃɑːpˌstɪks/", "meaning": "筷子"},
+        {"word": "glass", "syllables": "glass", "pronunciation": "/ɡlæs/", "meaning": "玻璃杯"},
+        {"word": "fresh", "syllables": "fresh", "pronunciation": "/frɛʃ/", "meaning": "新鲜的"}
+      ]
+    }
+  ]
+}
