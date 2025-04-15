@@ -1,12 +1,15 @@
 // --- Data Loading ---
 let wordsData = [];
-let currentLevel = 'H'; // Default to Level D
+let currentLevel = 'H'; // Default to Level H
 
 // Fetch vocabulary data from JSON file based on selected level
 async function loadVocabularyData(level = currentLevel) {
     console.log(`loadVocabularyData called with level: ${level}`);
     // Update current level immediately
     currentLevel = level;
+    // Reset shuffled words when changing levels
+    shuffledWords = [];
+    currentWordIndex = 0;
     // Show loading indicator
     document.querySelector('.container').innerHTML = `
         <div class="loading">
@@ -66,9 +69,9 @@ let wordPronunciationSpan = document.getElementById('word-pronunciation');
 let wordMeaningReviewSpan = document.getElementById('word-meaning-review');
 let promptDisplayDiv = document.getElementById('prompt-display');
 let attemptCounterDiv = document.getElementById('attempt-counter');
-let modeRadios = document.querySelectorAll('input[name="mode"]');
+let modeButtons = document.querySelectorAll('.mode-btn');
 let actionButtonsDiv = document.getElementById('action-buttons');
-let levelSelector = document.getElementById('level-selector');
+// Level selector is now replaced with buttons
 
 // --- Congratulation Messages ---
 const congratulationMessages = [
@@ -257,13 +260,19 @@ function loadWord() {
 
     // Check if we have valid shuffled words
     if (!shuffledWords || shuffledWords.length === 0) {
-        console.error('No shuffled words available');
-        if (wordsData[currentUnitIndex] && wordsData[currentUnitIndex].words) {
-            console.log('Reshuffling words from current unit');
+        console.log('No shuffled words available, attempting to load from wordsData');
+        if (wordsData && wordsData.length > 0 && wordsData[currentUnitIndex] && wordsData[currentUnitIndex].words && wordsData[currentUnitIndex].words.length > 0) {
+            console.log('Loading words from current unit');
             shuffledWords = [...wordsData[currentUnitIndex].words];
-            shuffleArray(shuffledWords);
+            if (shuffleEnabled) {
+                shuffleArray(shuffledWords);
+                console.log('Words shuffled');
+            } else {
+                console.log('Words kept in original order');
+            }
             currentWordIndex = 0;
         } else {
+            console.error('No words available in this unit');
             promptDiv.textContent = 'Error: No words available in this unit. Please try selecting a different level.';
             progressDiv.textContent = `Level: ${currentLevel} | No words available`;
             return;
@@ -382,7 +391,7 @@ function loadWord() {
 
     switch (currentMode) {
         case 'review':
-            promptDiv.textContent = 'Review Mode: See the word and IPA, type the word. Click "Speak Again" to hear the word.';
+            promptDiv.textContent = '';
             wordTextSpan.textContent = currentWordData.word;
             wordSyllablesSpan.textContent = currentWordData.syllables;
             wordPronunciationSpan.textContent = currentWordData.pronunciation || pronunciationPlaceholder;
@@ -395,7 +404,7 @@ function loadWord() {
             wordInput.focus();
             break;
         case 'dictation':
-            promptDiv.textContent = 'Dictation Mode: Type the English word based on the IPA. Click "Speak Again" to hear the word.';
+            promptDiv.textContent = '';
             if (hasPronunciation) {
                 promptDisplayDiv.textContent = currentWordData.pronunciation;
             } else {
@@ -412,7 +421,7 @@ function loadWord() {
             if (!wordInput.disabled) wordInput.focus();
             break;
         case 'listening':
-            promptDiv.textContent = 'Listening Mode: Listen to the audio, type the English word. Click "Speak Again" to hear the word.';
+            promptDiv.textContent = '';
             containerDiv.classList.add('input-visible', 'attempts-visible');
             checkButton.textContent = 'Check'; speakButton.style.display = 'inline-block';
             updateAttemptCounter();
@@ -537,7 +546,7 @@ function updateProgress() {
 
     if (isReviewingIncorrectWords) {
         // Show progress for incorrect words review
-        progressDiv.textContent = `Level: ${currentLevel} | Mode: ${getModeName(currentMode)} | Reviewing incorrect words: ${incorrectWords.length} remaining`;
+        progressDiv.textContent = `Level: ${currentLevel} | Mode: ${getModeName(currentMode)} | Progress: ${totalProgress + 1} / ${totalWords} | Reviewing incorrect words: ${incorrectWords.length} remaining`;
     } else {
         // Show normal progress
         let progressText = `Level: ${currentLevel} | Mode: ${getModeName(currentMode)} | Progress: ${totalProgress + 1} / ${totalWords}`;
@@ -589,15 +598,7 @@ nextWordButton.addEventListener('click', () => {
     // Do NOT increment totalProgress here since the answer was incorrect
     loadWord();
 });
-modeRadios.forEach(radio => {
-    radio.addEventListener('change', (event) => {
-        currentMode = event.target.value;
-        currentWordIndex = 0;
-        totalProgress = 0; // Reset progress when changing modes
-        shuffleArray(shuffledWords);
-        loadWord();
-    });
-});
+// Mode buttons are now handled in the rebuildUI function
 
 // --- Initialization ---
 let speechInitialized = false;
@@ -694,11 +695,8 @@ function initializeApp() {
 
         // If a mode is already selected, load the first word
         if (currentMode) {
-            const selectedRadio = document.querySelector(`input[name="mode"][value="${currentMode}"]`);
-            if (selectedRadio && selectedRadio.checked) {
-                console.log(`Mode already selected: ${currentMode}, loading first word`);
-                loadWord();
-            }
+            console.log(`Mode already selected: ${currentMode}, loading first word`);
+            loadWord();
         }
     } else {
         shuffledWords = [];
@@ -715,39 +713,52 @@ function rebuildUI() {
     containerDiv.innerHTML = `
         <h1>Vocabulary Practice</h1>
 
-        <div class="level-selection">
-            <label for="level-selector">Select Level:</label>
-            <select id="level-selector">
-                <option value="C">Level HFC</option>
-                <option value="D">Level HFD</option>
-                <option value="E">Level HFE</option>
-                <option value="F">Level HFF</option>
-                <option value="G">Level HFG</option>
-                <option value="H">Level HFH</option>
-                <option value="J">Level HFI-J</option>
-            </select>
+        <div class="top-controls">
+            <div class="level-buttons">
+                <span>HFLevel:</span>
+                <button class="level-btn ${currentLevel === 'C' ? 'active' : ''}" data-level="C">C</button>
+                <button class="level-btn ${currentLevel === 'D' ? 'active' : ''}" data-level="D">D</button>
+                <button class="level-btn ${currentLevel === 'E' ? 'active' : ''}" data-level="E">E</button>
+                <button class="level-btn ${currentLevel === 'F' ? 'active' : ''}" data-level="F">F</button>
+                <button class="level-btn ${currentLevel === 'G' ? 'active' : ''}" data-level="G">G</button>
+                <button class="level-btn ${currentLevel === 'H' ? 'active' : ''}" data-level="H">H</button>
+                <button class="level-btn ${currentLevel === 'J' ? 'active' : ''}" data-level="J">J</button>
+            </div>
+
+            <div class="mode-buttons">
+                <span>Mode:</span>
+                <button class="mode-btn ${currentMode === 'review' ? 'active' : ''}" data-mode="review" title="See English word, Chinese meaning and pronunciation">Review</button>
+                <button class="mode-btn ${currentMode === 'dictation' ? 'active' : ''}" data-mode="dictation" title="See pronunciation, type the English word">Dictation</button>
+                <button class="mode-btn ${currentMode === 'listening' ? 'active' : ''}" data-mode="listening" title="Listen to the word, type what you hear">Listening</button>
+            </div>
+
+            <div class="shuffle-toggle">
+                <label>
+                    <input type="checkbox" id="shuffle-toggle" ${shuffleEnabled ? 'checked' : ''}>
+                    <span>Shuffling</span>
+                </label>
+            </div>
         </div>
 
-        <div class="mode-selection">
-            <label>Select Mode:</label>
-            <label><input type="radio" name="mode" value="review" checked> Review</label>
-            <label><input type="radio" name="mode" value="dictation"> Dictation (IPA -> Word)</label>
-            <label><input type="radio" name="mode" value="listening"> Listening (Audio -> Word)</label>
-        </div>
-
-        <div class="options-selection">
-            <label><input type="checkbox" id="shuffle-toggle" ${shuffleEnabled ? 'checked' : ''}> Shuffle Words</label>
-        </div>
+        <div class="divider"></div>
 
         <div id="review-display" class="display-area">
-            <span id="word-text"></span>
-            <span id="word-syllables"></span>
-            <span id="word-pronunciation"></span>
-            <span id="word-meaning-review" style="display: none;"></span>
+            <div id="word-text" class="word-text"></div>
+            <div id="word-syllables" class="word-syllables"></div>
+            <div id="word-pronunciation" class="word-pronunciation"></div>
+            <div id="word-meaning-review" class="word-meaning" style="display: none;"></div>
         </div>
+
         <div id="prompt-display" class="display-area"></div>
 
-        <div id="prompt">Please select a mode to start.</div>
+        <div id="prompt" class="prompt-text">Please select a mode to start.</div>
+
+        <!-- Feedback area moved up to where prompt was -->
+        <div id="feedback">
+            <div id="result"></div>
+            <p id="correct-word"></p>
+            <p id="meaning"></p>
+        </div>
 
         <input type="text" id="word-input" placeholder="Type the word here..." autocomplete="off">
         <div id="attempt-counter"></div>
@@ -755,14 +766,7 @@ function rebuildUI() {
         <div id="action-buttons">
             <button id="speak-button">Speak Again</button>
             <button id="check-button">Check</button>
-            <button id="next-word-button" style="display: none;">Next Word</button>
-        </div>
-
-        <div id="feedback"></div>
-
-        <div id="result">
-            <p id="correct-word"></p>
-            <p id="meaning"></p>
+            <button id="next-word-button">Next Word</button>
         </div>
 
         <div id="progress"></div>
@@ -788,9 +792,7 @@ function rebuildUI() {
     const newWordMeaningReviewSpan = document.getElementById('word-meaning-review');
     const newPromptDisplayDiv = document.getElementById('prompt-display');
     const newAttemptCounterDiv = document.getElementById('attempt-counter');
-    const newModeRadios = document.querySelectorAll('input[name="mode"]');
     const newActionButtonsDiv = document.getElementById('action-buttons');
-    const newLevelSelector = document.getElementById('level-selector');
 
     // Update global references
     containerDiv = newContainerDiv;
@@ -811,12 +813,28 @@ function rebuildUI() {
     wordMeaningReviewSpan = newWordMeaningReviewSpan;
     promptDisplayDiv = newPromptDisplayDiv;
     attemptCounterDiv = newAttemptCounterDiv;
-    modeRadios = newModeRadios;
+    modeButtons = document.querySelectorAll('.mode-btn');
     actionButtonsDiv = newActionButtonsDiv;
 
-    console.log(`Setting level selector to: ${currentLevel}`);
-    newLevelSelector.value = currentLevel;
-    console.log(`Level selector value is now: ${newLevelSelector.value}`);
+    // Set active level button
+    console.log(`Setting active level button for level: ${currentLevel}`);
+    document.querySelectorAll('.level-btn').forEach(btn => {
+        if (btn.getAttribute('data-level') === currentLevel) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+
+    // Set active mode button
+    console.log(`Setting active mode button for mode: ${currentMode}`);
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+        if (btn.getAttribute('data-mode') === currentMode) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
 
     // Re-attach event listeners
     checkButton.addEventListener('click', handleCheckAction);
@@ -839,45 +857,74 @@ function rebuildUI() {
         // Do NOT increment totalProgress here since the answer was incorrect
         loadWord();
     });
-    modeRadios.forEach(radio => {
-        radio.addEventListener('change', (event) => {
-            console.log(`Mode changed to: ${event.target.value}`);
-            currentMode = event.target.value;
-            currentWordIndex = 0;
-            totalProgress = 0; // Reset progress when changing modes
 
-            // Make sure we have shuffled words
-            if (!shuffledWords || shuffledWords.length === 0) {
-                if (wordsData && wordsData.length > 0 && wordsData[currentUnitIndex] && wordsData[currentUnitIndex].words) {
-                    console.log('Initializing shuffled words for mode change');
-                    shuffledWords = [...wordsData[currentUnitIndex].words];
-                }
-            }
+    // Make the word area clickable to speak the word
+    reviewDisplayDiv.addEventListener('click', () => {
+        if (currentWordIndex < shuffledWords.length) {
+            speakWord(shuffledWords[currentWordIndex].word);
+        }
+    });
 
-            // Shuffle and load
-            if (shuffledWords && shuffledWords.length > 0) {
-                if (shuffleEnabled) {
-                    shuffleArray(shuffledWords);
-                    console.log('Words shuffled for mode change');
-                } else {
-                    console.log('Words kept in original order for mode change');
-                }
-                loadWord();
-            } else {
-                console.error('No words available to load');
-                promptDiv.textContent = 'Error: No words available. Please try selecting a different level.';
+    // Add event listeners for level buttons
+    document.querySelectorAll('.level-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            const newLevel = button.getAttribute('data-level');
+            if (newLevel !== currentLevel) {
+                console.log(`Level changed to: ${newLevel}`);
+                // Update active button
+                document.querySelectorAll('.level-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                button.classList.add('active');
+                // Load vocabulary data for the new level
+                loadVocabularyData(newLevel);
             }
         });
     });
 
-    // Add level selector event listener
-    newLevelSelector.addEventListener('change', (event) => {
-        const newLevel = event.target.value;
-        console.log(`Level changed to: ${newLevel}`);
-        // Always load the vocabulary data when the level changes
-        console.log(`Loading vocabulary data for level: ${newLevel}`);
-        loadVocabularyData(newLevel);
+    // Add event listeners for mode buttons
+    document.querySelectorAll('.mode-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            const newMode = button.getAttribute('data-mode');
+            if (newMode !== currentMode) {
+                console.log(`Mode changed to: ${newMode}`);
+                // Update active button
+                document.querySelectorAll('.mode-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                button.classList.add('active');
+
+                // Update mode and reset progress
+                currentMode = newMode;
+                currentWordIndex = 0;
+                totalProgress = 0; // Reset progress when changing modes
+
+                // Make sure we have shuffled words
+                if (!shuffledWords || shuffledWords.length === 0) {
+                    if (wordsData && wordsData.length > 0 && wordsData[currentUnitIndex] && wordsData[currentUnitIndex].words) {
+                        console.log('Initializing shuffled words for mode change');
+                        shuffledWords = [...wordsData[currentUnitIndex].words];
+                    }
+                }
+
+                // Shuffle and load
+                if (shuffledWords && shuffledWords.length > 0) {
+                    if (shuffleEnabled) {
+                        shuffleArray(shuffledWords);
+                        console.log('Words shuffled for mode change');
+                    } else {
+                        console.log('Words kept in original order for mode change');
+                    }
+                    loadWord();
+                } else {
+                    console.error('No words available to load');
+                    promptDiv.textContent = 'Error: No words available. Please try selecting a different level.';
+                }
+            }
+        });
     });
+
+    // Level buttons are now handled directly in their own event listeners above
 
     // Add shuffle toggle event listener
     const shuffleToggle = document.getElementById('shuffle-toggle');
@@ -920,21 +967,18 @@ function rebuildUI() {
                     }
                 }
 
-                // Reset to the beginning of the current set of words
-                if (currentWordIndex > 0) {
-                    currentWordIndex = 0;
-                    loadWord();
-                }
+                // Reset to the beginning of the current set of words and reload
+                currentWordIndex = 0;
+                loadWord(); // Always reload the word to update the display
             }
         });
     }
 
-    // Force a mode selection if one is already checked
-    const selectedRadio = document.querySelector('input[name="mode"]:checked');
-    if (selectedRadio) {
-        console.log(`Mode already selected: ${selectedRadio.value}, triggering change event`);
-        const event = new Event('change');
-        selectedRadio.dispatchEvent(event);
+    // Mode buttons are now handled directly in their own event listeners above
+    // Just load the word with the current mode
+    if (currentMode) {
+        console.log(`Mode already selected: ${currentMode}`);
+        loadWord();
     }
 }
 
