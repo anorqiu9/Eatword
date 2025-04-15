@@ -79,12 +79,15 @@ const congratulationMessages = [
 // Variables for tracking progress
 let currentUnitIndex = 0;
 let shuffledWords = [];
+let incorrectWords = []; // Array to store words that were answered incorrectly
 let totalProgress = 0; // Track total words completed across units
 
 let currentWordIndex = 0;
 let incorrectAttempts = 0;
 const MAX_ATTEMPTS = 3;
 let currentMode = 'review';
+let isReviewingIncorrectWords = false; // Flag to indicate if we're reviewing incorrect words
+let shuffleEnabled = false; // Flag to control whether words should be shuffled (default: not shuffled)
 let synth = window.speechSynthesis;
 let voices = [];
 let englishVoice = null;
@@ -268,7 +271,72 @@ function loadWord() {
     }
 
     if (currentWordIndex >= shuffledWords.length) {
-        // Do NOT increment totalProgress here; it should only increment on correct answers
+        // Check if we have incorrect words to review
+        if (!isReviewingIncorrectWords && incorrectWords.length > 0) {
+            // Switch to reviewing incorrect words
+            isReviewingIncorrectWords = true;
+            shuffledWords = [...incorrectWords];
+            if (shuffleEnabled) {
+                shuffleArray(shuffledWords);
+                console.log('Incorrect words shuffled for review');
+            } else {
+                console.log('Incorrect words kept in original order for review');
+            }
+            currentWordIndex = 0;
+
+            // Update UI to indicate we're reviewing incorrect words
+            promptDiv.textContent = `Review Mode: Practicing ${incorrectWords.length} words you got wrong. Master them all!`;
+            progressDiv.textContent = `Level: ${currentLevel} | Mode: ${getModeName(currentMode)} | Reviewing incorrect words: ${incorrectWords.length} remaining`;
+
+            console.log(`Switching to incorrect words review mode. ${incorrectWords.length} words to review.`);
+            return;
+        }
+
+        // If we were reviewing incorrect words and there are none left, or if there were no incorrect words
+        if (isReviewingIncorrectWords && incorrectWords.length === 0) {
+            // Reset to normal mode
+            isReviewingIncorrectWords = false;
+
+            // Show congratulations message for completing the review
+            promptDiv.textContent = 'Great job! You have mastered all the words you previously got wrong!';
+            feedbackDiv.textContent = '';
+            resultDiv.style.display = 'none';
+            reviewDisplayDiv.style.display = 'none';
+            promptDisplayDiv.style.display = 'none';
+            containerDiv.classList.remove('input-visible', 'attempts-visible', 'buttons-visible');
+            progressDiv.textContent = `Level: ${currentLevel} | Mode: ${getModeName(currentMode)} | All incorrect words mastered!`;
+
+            // Add a button to continue to the next unit
+            const continueButton = document.createElement('button');
+            continueButton.textContent = 'Continue to Next Unit';
+            continueButton.className = 'continue-button';
+            continueButton.addEventListener('click', () => {
+                // Continue with normal progression
+                currentUnitIndex++;
+                if (currentUnitIndex < wordsData.length) {
+                    shuffledWords = [...wordsData[currentUnitIndex].words];
+                    if (shuffleEnabled) {
+                        shuffleArray(shuffledWords);
+                        console.log('Words shuffled for next unit');
+                    } else {
+                        console.log('Words kept in original order for next unit');
+                    }
+                    currentWordIndex = 0;
+                    loadWord();
+                } else {
+                    // All units completed
+                    promptDiv.textContent = 'Congratulations! You have completed all units!';
+                    progressDiv.textContent = `Level: ${currentLevel} | Mode: ${getModeName(currentMode)} | Total ${totalProgress} words completed.`;
+                    continueButton.style.display = 'none';
+                }
+            });
+
+            // Add the button to the container
+            containerDiv.appendChild(continueButton);
+            return;
+        }
+
+        // Normal progression to next unit
         currentUnitIndex++;
         if (currentUnitIndex >= wordsData.length) {
             promptDiv.textContent = 'Congratulations! You have completed all units!';
@@ -283,6 +351,12 @@ function loadWord() {
 
         if (wordsData[currentUnitIndex] && wordsData[currentUnitIndex].words) {
             shuffledWords = [...wordsData[currentUnitIndex].words];
+            if (shuffleEnabled) {
+                shuffleArray(shuffledWords);
+                console.log('Words shuffled for next unit');
+            } else {
+                console.log('Words kept in original order for next unit');
+            }
             currentWordIndex = 0;
         } else {
             console.error('Invalid unit data');
@@ -375,6 +449,17 @@ function handleCheckAction() {
             clearTimeout(incorrectTimeout);
             incorrectTimeout = null;
         }
+
+        // If we're in review mode for incorrect words, remove this word from the incorrect words list
+        if (isReviewingIncorrectWords) {
+            // Find and remove the word from incorrectWords array
+            const wordIndex = incorrectWords.findIndex(w => w.word.toLowerCase() === correctWordLower);
+            if (wordIndex !== -1) {
+                incorrectWords.splice(wordIndex, 1);
+                console.log(`Removed word "${currentWordData.word}" from incorrect words list. ${incorrectWords.length} words remaining.`);
+            }
+        }
+
         if (nextWordData) {
             const randomMessage = congratulationMessages[Math.floor(Math.random() * congratulationMessages.length)];
             speakWord(randomMessage);
@@ -394,6 +479,15 @@ function handleCheckAction() {
         feedbackDiv.className = 'incorrect';
         wordInput.value = '';
         speakWord("Uh-oh");
+
+        // Add the word to incorrectWords array if it's not already there and we're not already reviewing incorrect words
+        if (!isReviewingIncorrectWords) {
+            const wordExists = incorrectWords.some(w => w.word.toLowerCase() === currentWordData.word.toLowerCase());
+            if (!wordExists) {
+                incorrectWords.push(currentWordData);
+                console.log(`Added word "${currentWordData.word}" to incorrect words list. Total: ${incorrectWords.length}`);
+            }
+        }
         if (currentMode === 'listening') {
             incorrectAttempts++;
             updateAttemptCounter();
@@ -440,7 +534,21 @@ function updateAttemptCounter() {
 
 function updateProgress() {
     const totalWords = getTotalWords();
-    progressDiv.textContent = `Mode: ${getModeName(currentMode)} | Progress: ${totalProgress + 1} / ${totalWords}`;
+
+    if (isReviewingIncorrectWords) {
+        // Show progress for incorrect words review
+        progressDiv.textContent = `Level: ${currentLevel} | Mode: ${getModeName(currentMode)} | Reviewing incorrect words: ${incorrectWords.length} remaining`;
+    } else {
+        // Show normal progress
+        let progressText = `Level: ${currentLevel} | Mode: ${getModeName(currentMode)} | Progress: ${totalProgress + 1} / ${totalWords}`;
+
+        // Add incorrect words count if there are any
+        if (incorrectWords.length > 0) {
+            progressText += ` | Incorrect words: ${incorrectWords.length}`;
+        }
+
+        progressDiv.textContent = progressText;
+    }
 }
 
 function getModeName(modeValue) {
@@ -564,7 +672,12 @@ function initializeApp() {
     if (wordsData && wordsData.length > 0 && wordsData[currentUnitIndex] && wordsData[currentUnitIndex].words) {
         console.log(`Found ${wordsData[currentUnitIndex].words.length} words in unit ${wordsData[currentUnitIndex].unit}`);
         shuffledWords = [...wordsData[currentUnitIndex].words];
-        shuffleArray(shuffledWords);
+        if (shuffleEnabled) {
+            shuffleArray(shuffledWords);
+            console.log('Words shuffled during initialization');
+        } else {
+            console.log('Words kept in original order during initialization');
+        }
 
         // Update UI
         containerDiv.classList.remove('input-visible', 'attempts-visible', 'buttons-visible');
@@ -620,6 +733,10 @@ function rebuildUI() {
             <label><input type="radio" name="mode" value="review" checked> Review</label>
             <label><input type="radio" name="mode" value="dictation"> Dictation (IPA -> Word)</label>
             <label><input type="radio" name="mode" value="listening"> Listening (Audio -> Word)</label>
+        </div>
+
+        <div class="options-selection">
+            <label><input type="checkbox" id="shuffle-toggle" ${shuffleEnabled ? 'checked' : ''}> Shuffle Words</label>
         </div>
 
         <div id="review-display" class="display-area">
@@ -739,7 +856,12 @@ function rebuildUI() {
 
             // Shuffle and load
             if (shuffledWords && shuffledWords.length > 0) {
-                shuffleArray(shuffledWords);
+                if (shuffleEnabled) {
+                    shuffleArray(shuffledWords);
+                    console.log('Words shuffled for mode change');
+                } else {
+                    console.log('Words kept in original order for mode change');
+                }
                 loadWord();
             } else {
                 console.error('No words available to load');
@@ -756,6 +878,56 @@ function rebuildUI() {
         console.log(`Loading vocabulary data for level: ${newLevel}`);
         loadVocabularyData(newLevel);
     });
+
+    // Add shuffle toggle event listener
+    const shuffleToggle = document.getElementById('shuffle-toggle');
+    if (shuffleToggle) {
+        shuffleToggle.checked = shuffleEnabled;
+        shuffleToggle.addEventListener('change', (event) => {
+            shuffleEnabled = event.target.checked;
+            console.log(`Shuffle ${shuffleEnabled ? 'enabled' : 'disabled'}`);
+
+            // If we have words loaded, reshuffle or sort them based on the new setting
+            if (shuffledWords && shuffledWords.length > 0) {
+                if (shuffleEnabled) {
+                    // Reshuffle the words
+                    shuffleArray(shuffledWords);
+                    console.log('Words reshuffled');
+                } else {
+                    // Sort words by their original order if possible
+                    // This assumes words have some sort of index or order property
+                    // If not, we'll just leave them in their current order
+                    if (wordsData && wordsData[currentUnitIndex] && wordsData[currentUnitIndex].words) {
+                        // Get original words in their natural order
+                        const originalWords = [...wordsData[currentUnitIndex].words];
+                        // Create a map of words by their text for quick lookup
+                        const wordMap = new Map();
+                        originalWords.forEach((word, index) => {
+                            wordMap.set(word.word.toLowerCase(), { word, index });
+                        });
+
+                        // Sort the current shuffled words based on their original order
+                        shuffledWords.sort((a, b) => {
+                            const aInfo = wordMap.get(a.word.toLowerCase());
+                            const bInfo = wordMap.get(b.word.toLowerCase());
+                            if (aInfo && bInfo) {
+                                return aInfo.index - bInfo.index;
+                            }
+                            return 0; // Keep original order if we can't find the words
+                        });
+
+                        console.log('Words sorted to original order');
+                    }
+                }
+
+                // Reset to the beginning of the current set of words
+                if (currentWordIndex > 0) {
+                    currentWordIndex = 0;
+                    loadWord();
+                }
+            }
+        });
+    }
 
     // Force a mode selection if one is already checked
     const selectedRadio = document.querySelector('input[name="mode"]:checked');
