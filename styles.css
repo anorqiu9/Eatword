@@ -47,7 +47,7 @@ h1 {
 }
 
 .mode-selection {
-    margin-bottom: 25px;
+    margin-bottom: 15px;
     text-align: left;
     padding-bottom: 15px;
     border-bottom: 1px solid #eee;
@@ -58,6 +58,25 @@ h1 {
     cursor: pointer;
     display: inline-block;
     margin-bottom: 5px;
+}
+
+.options-selection {
+    margin-bottom: 25px;
+    text-align: left;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.options-selection label {
+    margin-right: 10px;
+    cursor: pointer;
+    display: inline-block;
+    margin-bottom: 5px;
+}
+
+.options-selection input[type="checkbox"] {
+    margin-right: 5px;
+    vertical-align: middle;
 }
 
 .display-area {
@@ -279,4 +298,21 @@ h1 {
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+/* Continue button for incorrect words review */
+.continue-button {
+    background-color: #28a745;
+    color: white;
+    padding: 12px 20px;
+    font-size: 1.1em;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background-color 0.3s ease;
+}
+
+.continue-button:hover {
+    background-color: #218838;
 }
