@@ -1,0 +1,148 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2025-04-14",
+  "level": "J",
+  "units": [
+    {
+      "unit": "Unit 1",
+      "words": [
+        {"word": "energy", "syllables": "en / er / gy", "pronunciation": "/ˈɛnərdʒi/", "meaning": "能量"},
+        {"word": "point", "syllables": "point", "pronunciation": "/pɔɪnt/", "meaning": "点"},
+        {"word": "weapon", "syllables": "wea / pon", "pronunciation": "/ˈwɛpən/", "meaning": "武器"},
+        {"word": "screen", "syllables": "screen", "pronunciation": "/skriːn/", "meaning": "屏幕"},
+        {"word": "password", "syllables": "pass / word", "pronunciation": "/ˈpæswɜːrd/", "meaning": "密码"},
+        {"word": "button", "syllables": "but / ton", "pronunciation": "/ˈbʌtən/", "meaning": "按钮"},
+        {"word": "avoid", "syllables": "a / void", "pronunciation": "/əˈvɔɪd/", "meaning": "避免"},
+        {"word": "pick up", "syllables": "pick · up", "pronunciation": "/pɪk ʌp/", "meaning": "捡起"},
+        {"word": "defeat", "syllables": "de / feat", "pronunciation": "/dɪˈfiːt/", "meaning": "击败"},
+        {"word": "rescue", "syllables": "res / cue", "pronunciation": "/ˈrɛskjuː/", "meaning": "救援"},
+        {"word": "mosquito", "syllables": "mos / qui / to", "pronunciation": "/məˈskiːtoʊ/", "meaning": "蚊子"},
+        {"word": "fly", "syllables": "fly", "pronunciation": "/flaɪ/", "meaning": "苍蝇"},
+        {"word": "spider", "syllables": "spi / der", "pronunciation": "/ˈspaɪdər/", "meaning": "蜘蛛"},
+        {"word": "worm", "syllables": "worm", "pronunciation": "/wɜːrm/", "meaning": "蠕虫"},
+        {"word": "ant", "syllables": "ant", "pronunciation": "/ænt/", "meaning": "蚂蚁"},
+        {"word": "root", "syllables": "root", "pronunciation": "/ruːt/", "meaning": "根"},
+        {"word": "nest", "syllables": "nest", "pronunciation": "/nɛst/", "meaning": "巢"},
+        {"word": "hive", "syllables": "hive", "pronunciation": "/haɪv/", "meaning": "蜂巢"},
+        {"word": "petal", "syllables": "pe / tal", "pronunciation": "/ˈpɛtəl/", "meaning": "花瓣"},
+        {"word": "bark", "syllables": "bark", "pronunciation": "/bɑːrk/", "meaning": "树皮"},
+        {"word": "beak", "syllables": "beak", "pronunciation": "/biːk/", "meaning": "鸟喙"},
+        {"word": "teeth", "syllables": "teeth", "pronunciation": "/tiːθ/", "meaning": "牙齿"},
+        {"word": "feather", "syllables": "fea / ther", "pronunciation": "/ˈfɛðər/", "meaning": "羽毛"},
+        {"word": "spike", "syllables": "spike", "pronunciation": "/spaɪk/", "meaning": "尖刺"},
+        {"word": "claw", "syllables": "claw", "pronunciation": "/klɔː/", "meaning": "爪子"}
+      ]
+    },
+    {
+      "unit": "Unit 2",
+      "words": [
+        {"word": "be well behaved", "syllables": "be · well · be / ha / ved", "pronunciation": "/bi wɛl bɪˈheɪvd/", "meaning": "表现良好"},
+        {"word": "cheat", "syllables": "cheat", "pronunciation": "/tʃiːt/", "meaning": "作弊"},
+        {"word": "pass an exam", "syllables": "pass · an · ex / am", "pronunciation": "/pæs ən ɪɡˈzæm/", "meaning": "通过考试"},
+        {"word": "waste time", "syllables": "waste · time", "pronunciation": "/weɪst taɪm/", "meaning": "浪费时间"},
+        {"word": "be absent", "syllables": "be · ab / sent", "pronunciation": "/bi ˈæbsənt/", "meaning": "缺席"},
+        {"word": "pay attention", "syllables": "pay · at / ten / tion", "pronunciation": "/peɪ əˈtɛnʃən/", "meaning": "注意"},
+        {"word": "grade", "syllables": "grade", "pronunciation": "/ɡreɪd/", "meaning": "成绩"},
+        {"word": "detention", "syllables": "de / ten / tion", "pronunciation": "/dɪˈtɛnʃən/", "meaning": "留校察看"},
+        {"word": "warning", "syllables": "war / ning", "pronunciation": "/ˈwɔːrnɪŋ/", "meaning": "警告"},
+        {"word": "disappointed", "syllables": "dis / ap / poin / ted", "pronunciation": "/ˌdɪsəˈpɔɪntɪd/", "meaning": "失望的"},
+        {"word": "bored", "syllables": "bored", "pronunciation": "/bɔːrd/", "meaning": "无聊的"},
+        {"word": "excited", "syllables": "ex / ci / ted", "pronunciation": "/ɪkˈsaɪtɪd/", "meaning": "兴奋的"},
+        {"word": "frightened", "syllables": "fright / ened", "pronunciation": "/ˈfraɪtənd/", "meaning": "害怕的"},
+        {"word": "amazed", "syllables": "a / mazed", "pronunciation": "/əˈmeɪzd/", "meaning": "惊讶的"}
+      ]
+    },
+    {
+      "unit": "Unit 3",
+      "words": [
+        {"word": "sandstorm", "syllables": "sand / storm", "pronunciation": "/ˈsændˌstɔːrm/", "meaning": "沙尘暴"},
+        {"word": "blizzard", "syllables": "bliz / zard", "pronunciation": "/ˈblɪzərd/", "meaning": "暴风雪"},
+        {"word": "earthquake", "syllables": "earth / quake", "pronunciation": "/ˈɜːrθˌkweɪk/", "meaning": "地震"},
+        {"word": "mudslide", "syllables": "mud / slide", "pronunciation": "/ˈmʌdˌslaɪd/", "meaning": "泥石流"},
+        {"word": "typhoon", "syllables": "ty / phoon", "pronunciation": "/taɪˈfuːn/", "meaning": "台风"},
+        {"word": "tornado", "syllables": "tor / na / do", "pronunciation": "/tɔːrˈneɪdoʊ/", "meaning": "龙卷风"},
+        {"word": "volcano", "syllables": "vol / ca / no", "pronunciation": "/vɑːlˈkeɪnoʊ/", "meaning": "火山"},
+        {"word": "flood", "syllables": "flood", "pronunciation": "/flʌd/", "meaning": "洪水"},
+        {"word": "First Aid Club", "syllables": "First · Aid · Club", "pronunciation": "/fɜːrst eɪd klʌb/", "meaning": "急救俱乐部"},
+        {"word": "Skateboarding Club", "syllables": "Skate / boar / ding · Club", "pronunciation": "/ˈskeɪtˌbɔːrdɪŋ klʌb/", "meaning": "滑板俱乐部"},
+        {"word": "Photo Club", "syllables": "Pho / to · Club", "pronunciation": "/ˈfoʊtoʊ klʌb/", "meaning": "摄影俱乐部"},
+        {"word": "Kung Fu Club", "syllables": "Kung · Fu · Club", "pronunciation": "/kʌŋ fuː klʌb/", "meaning": "功夫俱乐部"},
+        {"word": "Pet Club", "syllables": "Pet · Club", "pronunciation": "/pɛt klʌb/", "meaning": "宠物俱乐部"},
+        {"word": "plan", "syllables": "plan", "pronunciation": "/plæn/", "meaning": "计划"},
+        {"word": "sign up", "syllables": "sign · up", "pronunciation": "/saɪn ʌp/", "meaning": "报名"},
+        {"word": "move", "syllables": "move", "pronunciation": "/muːv/", "meaning": "移动"},
+        {"word": "cancel", "syllables": "can / cel", "pronunciation": "/ˈkænsəl/", "meaning": "取消"}
+      ]
+    },
+    {
+      "unit": "Unit 4",
+      "words": [
+        {"word": "astronaut", "syllables": "as / tro / naut", "pronunciation": "/ˈæstrəˌnɔːt/", "meaning": "宇航员"},
+        {"word": "journalist", "syllables": "jour / na / list", "pronunciation": "/ˈdʒɜːrnəlɪst/", "meaning": "记者"},
+        {"word": "scientist", "syllables": "sci / en / tist", "pronunciation": "/ˈsaɪəntɪst/", "meaning": "科学家"},
+        {"word": "designer", "syllables": "de / si / gner", "pronunciation": "/dɪˈzaɪnər/", "meaning": "设计师"},
+        {"word": "artist", "syllables": "ar / tist", "pronunciation": "/ˈɑːrtɪst/", "meaning": "艺术家"},
+        {"word": "plastic", "syllables": "plas / tic", "pronunciation": "/ˈplæstɪk/", "meaning": "塑料"},
+        {"word": "wooden", "syllables": "woo / den", "pronunciation": "/ˈwʊdən/", "meaning": "木制的"},
+        {"word": "metal", "syllables": "me / tal", "pronunciation": "/ˈmɛtəl/", "meaning": "金属"},
+        {"word": "light bulb", "syllables": "light · bulb", "pronunciation": "/laɪt bʌlb/", "meaning": "灯泡"},
+        {"word": "candle", "syllables": "can / dle", "pronunciation": "/ˈkændəl/", "meaning": "蜡烛"},
+        {"word": "smartphone", "syllables": "smart / phone", "pronunciation": "/ˈsmɑːrtˌfoʊn/", "meaning": "智能手机"},
+        {"word": "battery", "syllables": "bat / te / ry", "pronunciation": "/ˈbætəri/", "meaning": "电池"},
+        {"word": "button", "syllables": "but / ton", "pronunciation": "/ˈbʌtən/", "meaning": "按钮"},
+        {"word": "remote control", "syllables": "re / mote · con / trol", "pronunciation": "/rɪˈmoʊt kənˈtroʊl/", "meaning": "遥控器"},
+        {"word": "engine", "syllables": "en / gine", "pronunciation": "/ˈɛndʒɪn/", "meaning": "引擎"},
+        {"word": "athlete", "syllables": "ath / lete", "pronunciation": "/ˈæθliːt/", "meaning": "运动员"},
+        {"word": "librarian", "syllables": "li / bra / rian", "pronunciation": "/laɪˈbrɛriən/", "meaning": "图书管理员"},
+        {"word": "president", "syllables": "pre / si / dent", "pronunciation": "/ˈprɛzɪdənt/", "meaning": "总统"},
+        {"word": "race car driver", "syllables": "race · car · dri / ver", "pronunciation": "/reɪs kɑːr ˈdraɪvər/", "meaning": "赛车手"},
+        {"word": "spy", "syllables": "spy", "pronunciation": "/spaɪ/", "meaning": "间谍"}
+      ]
+    },
+    {
+      "unit": "Unit 5",
+      "words": [
+        {"word": "India", "syllables": "In / dia", "pronunciation": "/ˈɪndiə/", "meaning": "印度"},
+        {"word": "New Zealand", "syllables": "New · Zea / land", "pronunciation": "/njuː ˈziːlənd/", "meaning": "新西兰"},
+        {"word": "South Korea", "syllables": "South · Ko / rea", "pronunciation": "/saʊθ kəˈriə/", "meaning": "韩国"},
+        {"word": "South Africa", "syllables": "South · Af / ri / ca", "pronunciation": "/saʊθ ˈæfrɪkə/", "meaning": "南非"},
+        {"word": "clue", "syllables": "clue", "pronunciation": "/kluː/", "meaning": "线索"},
+        {"word": "thief", "syllables": "thief", "pronunciation": "/θiːf/", "meaning": "小偷"},
+        {"word": "ransom note", "syllables": "ran / som · note", "pronunciation": "/ˈrænsəm noʊt/", "meaning": "赎金便条"},
+        {"word": "detective", "syllables": "de / tec / tive", "pronunciation": "/dɪˈtɛktɪv/", "meaning": "侦探"},
+        {"word": "diving", "syllables": "di / ving", "pronunciation": "/ˈdaɪvɪŋ/", "meaning": "潜水"},
+        {"word": "guided tour", "syllables": "gui / ded · tour", "pronunciation": "/ˈɡaɪdɪd tʊr/", "meaning": "导游"},
+        {"word": "safari", "syllables": "sa / fa / ri", "pronunciation": "/səˈfɑːri/", "meaning": "狩猎旅行"},
+        {"word": "surfing", "syllables": "sur / fing", "pronunciation": "/ˈsɜːrfɪŋ/", "meaning": "冲浪"},
+        {"word": "trekking", "syllables": "trek / king", "pronunciation": "/ˈtrɛkɪŋ/", "meaning": "徒步旅行"},
+        {"word": "cathedral", "syllables": "ca / the / dral", "pronunciation": "/kəˈθiːdrəl/", "meaning": "大教堂"},
+        {"word": "fountain", "syllables": "foun / tain", "pronunciation": "/ˈfaʊntən/", "meaning": "喷泉"},
+        {"word": "probably", "syllables": "pro / ba / bly", "pronunciation": "/ˈprɑːbəbli/", "meaning": "可能"},
+        {"word": "perhaps", "syllables": "per / haps", "pronunciation": "/pərˈhæps/", "meaning": "也许"},
+        {"word": "actually", "syllables": "ac / tu / al / ly", "pronunciation": "/ˈæktʃuəli/", "meaning": "实际上"}
+      ]
+    },
+    {
+      "unit": "Unit 6",
+      "words": [
+        {"word": "making snow angels", "syllables": "ma / king · snow · an / gels", "pronunciation": "/ˈmeɪkɪŋ snoʊ ˈeɪndʒəlz/", "meaning": "堆雪天使"},
+        {"word": "hang gliding", "syllables": "hang · gli / ding", "pronunciation": "/hæŋ ˈɡlaɪdɪŋ/", "meaning": "滑翔伞运动"},
+        {"word": "scuba diving", "syllables": "scu / ba · di / ving", "pronunciation": "/ˈskuːbə ˈdaɪvɪŋ/", "meaning": "水肺潜水"},
+        {"word": "snowboarding", "syllables": "snow / boar / ding", "pronunciation": "/ˈsnoʊˌbɔːrdɪŋ/", "meaning": "单板滑雪"},
+        {"word": "sledding", "syllables": "sled / ding", "pronunciation": "/ˈslɛdɪŋ/", "meaning": "滑雪橇"},
+        {"word": "ice skating", "syllables": "ice · ska / ting", "pronunciation": "/aɪs ˈskeɪtɪŋ/", "meaning": "滑冰"},
+        {"word": "skiing", "syllables": "ski / ing", "pronunciation": "/ˈskiːɪŋ/", "meaning": "滑雪"},
+        {"word": "mountain climbing", "syllables": "moun / tain · clim / bing", "pronunciation": "/ˈmaʊntən ˈklaɪmɪŋ/", "meaning": "登山"},
+        {"word": "kayaking", "syllables": "ka / ya / king", "pronunciation": "/ˈkaɪækɪŋ/", "meaning": "皮划艇运动"},
+        {"word": "windsurfing", "syllables": "wind / sur / fing", "pronunciation": "/ˈwɪndˌsɜːrfɪŋ/", "meaning": "风帆冲浪"},
+        {"word": "paragliding", "syllables": "pa / ra / gli / ding", "pronunciation": "/ˈpærəˌɡlaɪdɪŋ/", "meaning": "滑翔伞运动"},
+        {"word": "bungee jumping", "syllables": "bun / gee · jum / ping", "pronunciation": "/ˈbʌndʒi ˈdʒʌmpɪŋ/", "meaning": "蹦极"},
+        {"word": "horseback riding", "syllables": "horse / back · ri / ding", "pronunciation": "/ˈhɔːrsˌbæk ˈraɪdɪŋ/", "meaning": "骑马"},
+        {"word": "camping", "syllables": "cam / ping", "pronunciation": "/ˈkæmpɪŋ/", "meaning": "露营"},
+        {"word": "hiking", "syllables": "hi / king", "pronunciation": "/ˈhaɪkɪŋ/", "meaning": "远足"},
+        {"word": "rock climbing", "syllables": "rock · clim / bing", "pronunciation": "/rɑːk ˈklaɪmɪŋ/", "meaning": "攀岩"},
+        {"word": "awesome", "syllables": "awe / some", "pronunciation": "/ˈɔːsəm/", "meaning": "很棒的"}
+      ]
+    }
+  ]
+}

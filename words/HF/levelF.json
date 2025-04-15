@@ -1,0 +1,131 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2025-04-14",
+  "level": "HFF",
+  "units": [
+    {
+      "unit": "Unit 1",
+      "words": [
+        {"word": "jungle", "syllables": "jun / gle", "pronunciation": "/ˈdʒʌŋɡəl/", "meaning": "丛林"},
+        {"word": "river", "syllables": "ri / ver", "pronunciation": "/ˈrɪvər/", "meaning": "河流"},
+        {"word": "treasure map", "syllables": "trea / sure · map", "pronunciation": "/ˈtrɛʒər mæp/", "meaning": "藏宝图"},
+        {"word": "palm tree", "syllables": "palm · tree", "pronunciation": "/pɑːm triː/", "meaning": "棕榈树"},
+        {"word": "cave", "syllables": "cave", "pronunciation": "/keɪv/", "meaning": "洞穴"},
+        {"word": "between", "syllables": "be / tween", "pronunciation": "/bɪˈtwiːn/", "meaning": "在...之间"},
+        {"word": "on", "syllables": "on", "pronunciation": "/ɑːn/", "meaning": "在...上"},
+        {"word": "next to", "syllables": "next · to", "pronunciation": "/nɛkst tuː/", "meaning": "旁边"},
+        {"word": "behind", "syllables": "be / hind", "pronunciation": "/bɪˈhaɪnd/", "meaning": "在...后面"},
+        {"word": "in front of", "syllables": "in · front · of", "pronunciation": "/ɪn frʌnt əv/", "meaning": "在...前面"},
+        {"word": "compass", "syllables": "com / pass", "pronunciation": "/ˈkʌmpəs/", "meaning": "指南针"},
+        {"word": "stop", "syllables": "stop", "pronunciation": "/stɑːp/", "meaning": "停止"},
+        {"word": "south", "syllables": "south", "pronunciation": "/saʊθ/", "meaning": "南方"},
+        {"word": "go straight", "syllables": "go · straight", "pronunciation": "/ɡoʊ streɪt/", "meaning": "直走"},
+        {"word": "turn right", "syllables": "turn · right", "pronunciation": "/tɜːrn raɪt/", "meaning": "右转"},
+        {"word": "go over", "syllables": "go · o / ver", "pronunciation": "/ɡoʊ ˈoʊvər/", "meaning": "越过"}
+      ]
+    },
+    {
+      "unit": "Unit 2",
+      "words": [
+        {"word": "make jewelry", "syllables": "make · jew / el / ry", "pronunciation": "/meɪk ˈdʒuːəlri/", "meaning": "制作珠宝"},
+        {"word": "throw frisbee", "syllables": "throw · fris / bee", "pronunciation": "/θroʊ ˈfrɪzbi/", "meaning": "扔飞盘"},
+        {"word": "listen to music", "syllables": "lis / ten · to · mu / sic", "pronunciation": "/ˈlɪsən tə ˈmjuːzɪk/", "meaning": "听音乐"},
+        {"word": "play the piano", "syllables": "play · the · pi / a / no", "pronunciation": "/pleɪ ðə piˈænoʊ/", "meaning": "弹钢琴"},
+        {"word": "take photos", "syllables": "take · pho / tos", "pronunciation": "/teɪk ˈfoʊtoʊz/", "meaning": "拍照"},
+        {"word": "play soccer", "syllables": "play · soc / cer", "pronunciation": "/pleɪ ˈsɑːkər/", "meaning": "踢足球"},
+        {"word": "fly a kite", "syllables": "fly · a · kite", "pronunciation": "/flaɪ ə kaɪt/", "meaning": "放风筝"},
+        {"word": "collect stamps", "syllables": "col / lect · stamps", "pronunciation": "/kəˈlɛkt stæmps/", "meaning": "集邮"},
+        {"word": "collect shells", "syllables": "col / lect · shells", "pronunciation": "/kəˈlɛkt ʃɛlz/", "meaning": "收集贝壳"},
+        {"word": "collect coins", "syllables": "col / lect · coins", "pronunciation": "/kəˈlɛkt kɔɪnz/", "meaning": "收集硬币"},
+        {"word": "watch movies", "syllables": "watch · mo / vies", "pronunciation": "/wɑːtʃ ˈmuːviz/", "meaning": "看电影"},
+        {"word": "play video games", "syllables": "play · vi / deo · games", "pronunciation": "/pleɪ ˈvɪdioʊ ɡeɪmz/", "meaning": "玩电子游戏"},
+        {"word": "play the violin", "syllables": "play · the · vi / o / lin", "pronunciation": "/pleɪ ðə ˌvaɪəˈlɪn/", "meaning": "拉小提琴"},
+        {"word": "play the drums", "syllables": "play · the · drums", "pronunciation": "/pleɪ ðə drʌmz/", "meaning": "打鼓"},
+        {"word": "draw pictures", "syllables": "draw · pic / tures", "pronunciation": "/drɔː ˈpɪktʃərz/", "meaning": "画画"}
+      ]
+    },
+    {
+      "unit": "Unit 3",
+      "words": [
+        {"word": "buffalo", "syllables": "buf / fa / lo", "pronunciation": "/ˈbʌfəˌloʊ/", "meaning": "水牛"},
+        {"word": "snake", "syllables": "snake", "pronunciation": "/sneɪk/", "meaning": "蛇"},
+        {"word": "monkey", "syllables": "mon / key", "pronunciation": "/ˈmʌŋki/", "meaning": "猴子"},
+        {"word": "crocodile", "syllables": "cro / co / dile", "pronunciation": "/ˈkrɑːkəˌdaɪl/", "meaning": "鳄鱼"},
+        {"word": "cheetah", "syllables": "chee / tah", "pronunciation": "/ˈtʃiːtə/", "meaning": "猎豹"},
+        {"word": "lemur", "syllables": "le / mur", "pronunciation": "/ˈliːmər/", "meaning": "狐猴"},
+        {"word": "hippo", "syllables": "hip / po", "pronunciation": "/ˈhɪpoʊ/", "meaning": "河马"},
+        {"word": "giraffe", "syllables": "gi / raffe", "pronunciation": "/dʒəˈræf/", "meaning": "长颈鹿"},
+        {"word": "elephant", "syllables": "e / le / phant", "pronunciation": "/ˈɛləfənt/", "meaning": "大象"},
+        {"word": "lion", "syllables": "li / on", "pronunciation": "/ˈlaɪən/", "meaning": "狮子"},
+        {"word": "gazelle", "syllables": "ga / zelle", "pronunciation": "/ɡəˈzɛl/", "meaning": "瞪羚"},
+        {"word": "gorilla", "syllables": "go / ril / la", "pronunciation": "/ɡəˈrɪlə/", "meaning": "大猩猩"},
+        {"word": "leopard", "syllables": "leo / pard", "pronunciation": "/ˈlɛpərd/", "meaning": "豹"},
+        {"word": "tail", "syllables": "tail", "pronunciation": "/teɪl/", "meaning": "尾巴"},
+        {"word": "spot", "syllables": "spot", "pronunciation": "/spɑːt/", "meaning": "斑点"},
+        {"word": "horn", "syllables": "horn", "pronunciation": "/hɔːrn/", "meaning": "角"}
+      ]
+    },
+    {
+      "unit": "Unit 4",
+      "words": [
+        {"word": "change", "syllables": "change", "probe": "/tʃeɪndʒ/", "meaning": "零钱"},
+        {"word": "expensive", "syllables": "ex / pen / sive", "pronunciation": "/ɪkˈspɛnsɪv/", "meaning": "昂贵的"},
+        {"word": "half price", "syllables": "half · price", "pronunciation": "/hæf praɪs/", "meaning": "半价"},
+        {"word": "on sale", "syllables": "on · sale", "pronunciation": "/ɑːn seɪl/", "meaning": "促销"},
+        {"word": "cheap", "syllables": "cheap", "pronunciation": "/tʃiːp/", "meaning": "便宜的"},
+        {"word": "pet store", "syllables": "pet · store", "pronunciation": "/pɛt stɔːr/", "meaning": "宠物店"},
+        {"word": "electronics store", "syllables": "e / lec / tro / nics · store", "pronunciation": "/ɪˌlɛkˈtrɑːnɪks stɔːr/", "meaning": "电子产品店"},
+        {"word": "art store", "syllables": "art · store", "pronunciation": "/ɑːrt stɔːr/", "meaning": "艺术品店"},
+        {"word": "clothes store", "syllables": "clothes · store", "pronunciation": "/kloʊz stɔːr/", "meaning": "服装店"},
+        {"word": "bakery", "syllables": "ba / ke / ry", "pronunciation": "/ˈbeɪkəri/", "meaning": "面包店"},
+        {"word": "camera", "syllables": "ca / me / ra", "pronunciation": "/ˈkæmərə/", "meaning": "相机"},
+        {"word": "supermarket", "syllables": "su / per / mar / ket", "pronunciation": "/ˈsuːpərˌmɑːrkɪt/", "meaning": "超市"},
+        {"word": "memory card", "syllables": "me / mo / ry · card", "pronunciation": "/ˈmɛməri kɑːrd/", "meaning": "存储卡"},
+        {"word": "food court", "syllables": "food · court", "pronunciation": "/fuːd kɔːrt/", "meaning": "美食广场"},
+        {"word": "mall", "syllables": "mall", "pronunciation": "/mɔːl/", "meaning": "购物中心"},
+        {"word": "dictionary", "syllables": "dic / tio / na / ry", "pronunciation": "/ˈdɪkʃəˌnɛri/", "meaning": "字典"}
+      ]
+    },
+    {
+      "unit": "Unit 5",
+      "words": [
+        {"word": "mountain", "syllables": "moun / tain", "pronunciation": "/ˈmaʊntən/", "meaning": "山"},
+        {"word": "water park", "syllables": "wa / ter · park", "pronunciation": "/ˈwɔːtər pɑːrk/", "meaning": "水上乐园"},
+        {"word": "restaurant", "syllables": "res / tau / rant", "pronunciation": "/ˈrɛstərɑːnt/", "meaning": "餐厅"},
+        {"word": "hang streamers", "syllables": "hang · strea / mers", "pronunciation": "/hæŋ ˈstriːmərz/", "meaning": "挂彩带"},
+        {"word": "museum", "syllables": "mu / se / um", "pronunciation": "/mjuˈziːəm/", "meaning": "博物馆"},
+        {"word": "zoo", "syllables": "zoo", "pronunciation": "/zuː/", "meaning": "动物园"},
+        {"word": "the USA", "syllables": "the · U · S · A", "pronunciation": "/ðə juː ɛs eɪ/", "meaning": "美国"},
+        {"word": "Singapore", "syllables": "Sin / ga / pore", "pronunciation": "/ˌsɪŋəˈpɔːr/", "meaning": "新加坡"},
+        {"word": "Australia", "syllables": "Aus / tra / lia", "pronunciation": "/əˈstreɪliə/", "meaning": "澳大利亚"},
+        {"word": "the UK", "syllables": "the · U · K", "pronunciation": "/ðə juː keɪ/", "meaning": "英国"},
+        {"word": "Thailand", "syllables": "Thai / land", "pronunciation": "/ˈtaɪlænd/", "meaning": "泰国"},
+        {"word": "China", "syllables": "Chi / na", "pronunciation": "/ˈtʃaɪnə/", "meaning": "中国"},
+        {"word": "vacation", "syllables": "va / ca / tion", "pronunciation": "/veɪˈkeɪʃən/", "meaning": "度假"},
+        {"word": "countryside", "syllables": "coun / try / side", "pronunciation": "/ˈkʌntriˌsaɪd/", "meaning": "乡村"},
+        {"word": "beach", "syllables": "beach", "pronunciation": "/biːtʃ/", "meaning": "海滩"}
+      ]
+    },
+    {
+      "unit": "Unit 6",
+      "words": [
+        {"word": "f  fairy", "syllables": "fai / ry", "pronunciation": "/ˈfɛri/", "meaning": "仙女"},
+        {"word": "queen", "syllables": "queen", "pronunciation": "/kwiːn/", "meaning": "女王"},
+        {"word": "princess", "syllables": "prin / cess", "pronunciation": "/ˈprɪnsɛs/", "meaning": "公主"},
+        {"word": "robot", "syllables": "ro / bot", "pronunciation": "/ˈroʊbɑːt/", "meaning": "机器人"},
+        {"word": "astronaut", "syllables": "as / tro / naut", "pronunciation": "/ˈæstrəˌnɔːt/", "meaning": "宇航员"},
+        {"word": "vampire", "syllables": "vam / pire", "pronunciation": "/ˈvæmpaɪər/", "meaning": "吸血鬼"},
+        {"word": "dragon", "syllables": "dra / gon", "pronunciation": "/ˈdræɡən/", "meaning": "龙"},
+        {"word": "alien", "syllables": "a / lien", "pronunciation": "/ˈeɪliən/", "meaning": "外星人"},
+        {"word": "pirate", "syllables": "pi / rate", "pronunciation": "/ˈpaɪrət/", "meaning": "海盗"},
+        {"word": "wizard", "syllables": "wi / zard", "pronunciation": "/ˈwɪzərd/", "meaning": "巫师"},
+        {"word": "cowboy", "syllables": "cow / boy", "pronunciation": "/ˈkaʊˌbɔɪ/", "meaning": "牛仔"},
+        {"word": "hero", "syllables": "he / ro", "pronunciation": "/ˈhɪroʊ/", "meaning": "英雄"},
+        {"word": "villain", "syllables": "vil / lain", "pronunciation": "/ˈvɪlən/", "meaning": "恶棍"},
+        {"word": "beginning", "syllables": "be / gin / ning", "pronunciation": "/bɪˈɡɪnɪŋ/", "meaning": "开始"},
+        {"word": "middle", "syllables": "mid / dle", "pronunciation": "/ˈmɪdəl/", "meaning": "中间"},
+        {"word": "end", "syllables": "end", "pronunciation": "/ɛnd/", "meaning": "结束"}
+      ]
+    }
+  ]
+}

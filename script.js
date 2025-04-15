@@ -1,24 +1,36 @@
 // --- Data Loading ---
 let wordsData = [];
+let currentLevel = 'H'; // Default to Level D
 
-// Fetch vocabulary data from JSON file
-async function loadVocabularyData() {
+// Fetch vocabulary data from JSON file based on selected level
+async function loadVocabularyData(level = currentLevel) {
+    console.log(`loadVocabularyData called with level: ${level}`);
+    // Update current level immediately
+    currentLevel = level;
     // Show loading indicator
     document.querySelector('.container').innerHTML = `
         <div class="loading">
             <div class="loading-spinner"></div>
-            <p>Loading vocabulary data...</p>
+            <p>Loading vocabulary data for Level ${level}...</p>
         </div>
     `;
 
     try {
-        const response = await fetch('words.json');
+        const url = `words/HF/level${level}.json`;
+        console.log(`Fetching from URL: ${url}`);
+        const response = await fetch(url);
+        console.log(`Response status: ${response.status}`);
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
         const data = await response.json();
         wordsData = data.units;
-        console.log(`Vocabulary data loaded successfully (version ${data.version}, last updated ${data.lastUpdated})`);
+        // We already set currentLevel at the beginning of the function
+        // Make sure it matches what's in the file
+        if (data.level !== currentLevel) {
+            console.warn(`Level in file (${data.level}) doesn't match requested level (${currentLevel}). Using requested level.`);
+        }
+        console.log(`Vocabulary data loaded successfully (Level ${currentLevel}, version ${data.version}, last updated ${data.lastUpdated})`);
 
         // Rebuild the UI
         rebuildUI();
@@ -26,116 +38,37 @@ async function loadVocabularyData() {
         // Initialize the app
         initializeApp();
     } catch (error) {
-        console.error('Error loading vocabulary data:', error);
+        console.error(`Error loading vocabulary data for Level ${level}:`, error);
         document.querySelector('.container').innerHTML = `
             <h1>Error Loading Data</h1>
-            <p>Sorry, there was a problem loading the vocabulary data. Please try refreshing the page.</p>
+            <p>Sorry, there was a problem loading the vocabulary data for Level ${level}. Please try refreshing the page or selecting a different level.</p>
             <p>Error details: ${error.message}</p>
         `;
     }
 }
 
 // --- DOM References ---
-let containerDiv, wordInput, checkButton, speakButton, nextWordButton, feedbackDiv;
-let resultDiv, correctWordP, meaningP, progressDiv, promptDiv, reviewDisplayDiv;
-let wordTextSpan, wordSyllablesSpan, wordPronunciationSpan, wordMeaningReviewSpan;
-let promptDisplayDiv, attemptCounterDiv, modeRadios, actionButtonsDiv;
-
-// Function to rebuild the UI after loading data
-function rebuildUI() {
-    // Restore the original HTML structure
-    document.querySelector('.container').innerHTML = `
-        <h1>Vocabulary Practice</h1>
-
-        <div class="mode-selection">
-            <label>Select Mode:</label>
-            <label><input type="radio" name="mode" value="review" checked> Review</label>
-            <label><input type="radio" name="mode" value="dictation"> Dictation (IPA -> Word)</label>
-            <label><input type="radio" name="mode" value="listening"> Listening (Audio -> Word)</label>
-        </div>
-
-        <div id="review-display" class="display-area">
-            <span id="word-text"></span>
-            <span id="word-syllables"></span>
-            <span id="word-pronunciation"></span>
-            <span id="word-meaning-review" style="display: none;"></span>
-        </div>
-        <div id="prompt-display" class="display-area"></div>
-
-        <div id="prompt">Please select a mode to start.</div>
-
-        <input type="text" id="word-input" placeholder="Type the word here..." autocomplete="off">
-        <div id="attempt-counter"></div>
-
-        <div id="action-buttons">
-            <button id="speak-button">Speak Again</button>
-            <button id="check-button">Check</button>
-            <button id="next-word-button" style="display: none;">Next Word</button>
-        </div>
-
-        <div id="feedback"></div>
-
-        <div id="result">
-            <p id="correct-word"></p>
-            <p id="meaning"></p>
-        </div>
-
-        <div id="progress"></div>
-    `;
-
-    // Re-initialize DOM references
-    containerDiv = document.querySelector('.container');
-    wordInput = document.getElementById('word-input');
-    checkButton = document.getElementById('check-button');
-    speakButton = document.getElementById('speak-button');
-    nextWordButton = document.getElementById('next-word-button');
-    feedbackDiv = document.getElementById('feedback');
-    resultDiv = document.getElementById('result');
-    correctWordP = document.getElementById('correct-word');
-    meaningP = document.getElementById('meaning');
-    progressDiv = document.getElementById('progress');
-    promptDiv = document.getElementById('prompt');
-    reviewDisplayDiv = document.getElementById('review-display');
-    wordTextSpan = document.getElementById('word-text');
-    wordSyllablesSpan = document.getElementById('word-syllables');
-    wordPronunciationSpan = document.getElementById('word-pronunciation');
-    wordMeaningReviewSpan = document.getElementById('word-meaning-review');
-    promptDisplayDiv = document.getElementById('prompt-display');
-    attemptCounterDiv = document.getElementById('attempt-counter');
-    modeRadios = document.querySelectorAll('input[name="mode"]');
-    actionButtonsDiv = document.getElementById('action-buttons');
-
-    // Re-attach event listeners
-    checkButton.addEventListener('click', handleCheckAction);
-    wordInput.addEventListener('keypress', (event) => {
-        if (event.key === 'Enter' && !wordInput.disabled && checkButton.style.display !== 'none') {
-            event.preventDefault();
-            handleCheckAction();
-        }
-    });
-    speakButton.addEventListener('click', () => {
-        if (currentWordIndex < shuffledWords.length) {
-            speakWord(shuffledWords[currentWordIndex].word);
-            if (containerDiv.classList.contains('input-visible') && !wordInput.disabled) {
-                wordInput.focus();
-            }
-        }
-    });
-    nextWordButton.addEventListener('click', () => {
-        currentWordIndex++;
-        // Do NOT increment totalProgress here since the answer was incorrect
-        loadWord();
-    });
-    modeRadios.forEach(radio => {
-        radio.addEventListener('change', (event) => {
-            currentMode = event.target.value;
-            currentWordIndex = 0;
-            totalProgress = 0; // Reset progress when changing modes
-            shuffleArray(shuffledWords);
-            loadWord();
-        });
-    });
-}
+let containerDiv = document.querySelector('.container');
+let wordInput = document.getElementById('word-input');
+let checkButton = document.getElementById('check-button');
+let speakButton = document.getElementById('speak-button');
+let nextWordButton = document.getElementById('next-word-button');
+let feedbackDiv = document.getElementById('feedback');
+let resultDiv = document.getElementById('result');
+let correctWordP = document.getElementById('correct-word');
+let meaningP = document.getElementById('meaning');
+let progressDiv = document.getElementById('progress');
+let promptDiv = document.getElementById('prompt');
+let reviewDisplayDiv = document.getElementById('review-display');
+let wordTextSpan = document.getElementById('word-text');
+let wordSyllablesSpan = document.getElementById('word-syllables');
+let wordPronunciationSpan = document.getElementById('word-pronunciation');
+let wordMeaningReviewSpan = document.getElementById('word-meaning-review');
+let promptDisplayDiv = document.getElementById('prompt-display');
+let attemptCounterDiv = document.getElementById('attempt-counter');
+let modeRadios = document.querySelectorAll('input[name="mode"]');
+let actionButtonsDiv = document.getElementById('action-buttons');
+let levelSelector = document.getElementById('level-selector');
 
 // --- Congratulation Messages ---
 const congratulationMessages = [
@@ -154,18 +87,33 @@ const MAX_ATTEMPTS = 3;
 let currentMode = 'review';
 let synth = window.speechSynthesis;
 let voices = [];
+let englishVoice = null;
+let chineseVoice = null;
 let currentUtterance = null;
 let incorrectTimeout = null;
 let isSpeaking = false;
 const pronunciationPlaceholder = "No IPA available";
 
-    // 加载语音列表
-    function loadVoices() {
-        voices = window.speechSynthesis.getVoices();
-      }
+// 加载语音列表
+function loadVoices() {
+    voices = window.speechSynthesis.getVoices();
+    console.log(`Loaded ${voices.length} voices`);
 
-      // 确保语音加载完成
-      window.speechSynthesis.onvoiceschanged = loadVoices;
+    // Cache the English and Chinese voices for future use
+    if (voices.length > 0) {
+        englishVoice = voices.find(v => v.lang.startsWith('en'));
+        chineseVoice = voices.find(v => v.lang.startsWith('zh'));
+
+        console.log(`Found English voice: ${englishVoice ? englishVoice.name : 'None'}`);
+        console.log(`Found Chinese voice: ${chineseVoice ? chineseVoice.name : 'None'}`);
+    }
+}
+
+// 确保语音加载完成
+window.speechSynthesis.onvoiceschanged = loadVoices;
+
+// Initial load of voices
+loadVoices();
 
 // --- Functions ---
 function shuffleArray(array) {
@@ -184,6 +132,21 @@ function speakWord(text) {
         console.log('No text to speak');
         return;
     }
+
+    // Check if voices are loaded, if not, try to load them
+    if (!voices || voices.length === 0) {
+        console.log('No voices available, trying to reload voices');
+        loadVoices();
+
+        // If still no voices, show error and return
+        if (!voices || voices.length === 0) {
+            console.error('Failed to load voices');
+            feedbackDiv.textContent = '语音功能初始化失败，请刷新页面重试';
+            feedbackDiv.className = 'incorrect';
+            return;
+        }
+    }
+
     currentUtterance = new SpeechSynthesisUtterance(text);
     currentUtterance.onend = () => {
         console.log(`Finished speaking: ${text}`);
@@ -192,56 +155,73 @@ function speakWord(text) {
     };
     currentUtterance.onerror = (event) => {
         console.error('Speech synthesis error:', event);
-        /*
-        if (retryCount < maxRetries) {
-            retryCount++;
-            console.log(`Retrying speech (${retryCount}/${maxRetries})`);
-            setTimeout(() => {
-                synth.cancel();
-                const newUtterance = new SpeechSynthesisUtterance(text);
-                newUtterance.onend = () => {
-                    currentUtterance = null;
-                    isSpeaking = false;
-                    console.log(`Retry finished: ${text}`);
-                };
-                newUtterance.onerror = currentUtterance.onerror;
-                if (selectedVoice) {
-                    newUtterance.voice = selectedVoice;
-                    newUtterance.pitch = 1.1;
-                    newUtterance.rate = 0.9;
-                }
-                newUtterance.volume = 1;
-                currentUtterance = newUtterance;
-                synth.speak(currentUtterance);
-            }, 1000);
-        } else {
-            feedbackDiv.textContent = '语音合成暂时不可用，请稍后再试';
-            feedbackDiv.className = 'incorrect';
-            currentUtterance = null;
-            isSpeaking = false;
-            console.log('Speech synthesis failed after retries');
-        }
-            //*/
+        feedbackDiv.textContent = '语音合成暂时不可用，请稍后再试';
+        feedbackDiv.className = 'incorrect';
+        currentUtterance = null;
+        isSpeaking = false;
     };
-        let selectedVoice = null;
-     // 选择适合的语音
-     if (/[\u4e00-\u9fa5]/.test(text)) {
-        // 中文
-        selectedVoice = voices.find(v => v.lang.startsWith('zh') && v.localService);
-      } else {
-        // 英文
-        selectedVoice = voices.find(v => v.lang.startsWith('en') && v.localService);
-      }
 
-      if (!selectedVoice) {
-        errMessage = "未找到合适语音，请确保启用了语音朗读功能";
-        //alert(errMessage);
-        console.error(errMessage);
-      }
+    let selectedVoice = null;
+
+    // Check if the text contains Chinese characters
+    if (/[\u4e00-\u9fa5]/.test(text)) {
+        // Use cached Chinese voice if available
+        if (chineseVoice) {
+            selectedVoice = chineseVoice;
+            console.log(`Using cached Chinese voice: ${chineseVoice.name}`);
+        } else {
+            // Try to find a Chinese voice
+            selectedVoice = voices.find(v => v.lang.startsWith('zh'));
+            if (selectedVoice) {
+                // Cache the voice for future use
+                chineseVoice = selectedVoice;
+                console.log(`Found and cached Chinese voice: ${selectedVoice.name}`);
+            }
+        }
+    } else {
+        // Use cached English voice if available
+        if (englishVoice) {
+            selectedVoice = englishVoice;
+            console.log(`Using cached English voice: ${englishVoice.name}`);
+        } else {
+            // Try to find an English voice
+            selectedVoice = voices.find(v => v.lang.startsWith('en'));
+            if (selectedVoice) {
+                // Cache the voice for future use
+                englishVoice = selectedVoice;
+                console.log(`Found and cached English voice: ${selectedVoice.name}`);
+            }
+        }
+    }
+
+    if (!selectedVoice) {
+        console.warn('No appropriate voice found, using default voice');
+    } else {
+        console.log(`Selected voice: ${selectedVoice.name} (${selectedVoice.lang})`);
+    }
 
     try {
-        currentUtterance.voice = selectedVoice;
+        // Set voice if available
+        if (selectedVoice) {
+            currentUtterance.voice = selectedVoice;
+            // Adjust speech parameters for better quality
+            currentUtterance.pitch = 1.0;
+
+            // Set slower rate for English words, normal rate for Chinese
+            if (!/[\u4e00-\u9fa5]/.test(text)) {
+                // English word - speak more slowly
+                currentUtterance.rate = 0.8; // Slower rate for English
+                console.log('Speaking English word slowly with rate: 0.7');
+            } else {
+                // Chinese text - normal rate
+                currentUtterance.rate = 1;
+                console.log('Speaking Chinese text with normal rate: 0.9');
+            }
+        }
+
+        currentUtterance.volume = 1.0;
         synth.speak(currentUtterance);
+        isSpeaking = true;
         console.log(`Speaking: ${text}`);
     } catch (error) {
         console.error('Speech synthesis initialization failed:', error);
@@ -263,6 +243,30 @@ function showResultDetails() {
 
 function loadWord() {
     console.log('Loading new word');
+
+    // Check if we have valid data
+    if (!wordsData || wordsData.length === 0) {
+        console.error('No vocabulary data available');
+        promptDiv.textContent = 'Error: No vocabulary data available. Please try selecting a different level.';
+        progressDiv.textContent = `Level: ${currentLevel} | No data available`;
+        return;
+    }
+
+    // Check if we have valid shuffled words
+    if (!shuffledWords || shuffledWords.length === 0) {
+        console.error('No shuffled words available');
+        if (wordsData[currentUnitIndex] && wordsData[currentUnitIndex].words) {
+            console.log('Reshuffling words from current unit');
+            shuffledWords = [...wordsData[currentUnitIndex].words];
+            shuffleArray(shuffledWords);
+            currentWordIndex = 0;
+        } else {
+            promptDiv.textContent = 'Error: No words available in this unit. Please try selecting a different level.';
+            progressDiv.textContent = `Level: ${currentLevel} | No words available`;
+            return;
+        }
+    }
+
     if (currentWordIndex >= shuffledWords.length) {
         // Do NOT increment totalProgress here; it should only increment on correct answers
         currentUnitIndex++;
@@ -273,11 +277,18 @@ function loadWord() {
             reviewDisplayDiv.style.display = 'none';
             promptDisplayDiv.style.display = 'none';
             containerDiv.classList.remove('input-visible', 'attempts-visible', 'buttons-visible');
-            progressDiv.textContent = `Mode: ${getModeName(currentMode)} | Total ${totalProgress} words completed.`;
+            progressDiv.textContent = `Level: ${currentLevel} | Mode: ${getModeName(currentMode)} | Total ${totalProgress} words completed.`;
             return;
         }
-        shuffledWords = [...wordsData[currentUnitIndex].words];
-        currentWordIndex = 0;
+
+        if (wordsData[currentUnitIndex] && wordsData[currentUnitIndex].words) {
+            shuffledWords = [...wordsData[currentUnitIndex].words];
+            currentWordIndex = 0;
+        } else {
+            console.error('Invalid unit data');
+            promptDiv.textContent = 'Error: Invalid unit data. Please try selecting a different level.';
+            return;
+        }
     }
     const currentWordData = shuffledWords[currentWordIndex];
     incorrectAttempts = 0;
@@ -293,8 +304,6 @@ function loadWord() {
     wordMeaningReviewSpan.style.display = 'none'; wordMeaningReviewSpan.textContent = '';
     containerDiv.classList.remove('input-visible', 'attempts-visible', 'buttons-visible');
     containerDiv.classList.add('buttons-visible');
-    synth.cancel(); // Clear speech queue
-    isSpeaking = false; // Reset speaking state
     let hasPronunciation = currentWordData.pronunciation && currentWordData.pronunciation !== pronunciationPlaceholder;
 
     switch (currentMode) {
@@ -443,30 +452,94 @@ function getModeName(modeValue) {
     }
 }
 
-// Event listeners are now attached in the rebuildUI() function
+// --- Event Listeners ---
+checkButton.addEventListener('click', handleCheckAction);
+wordInput.addEventListener('keypress', (event) => {
+    if (event.key === 'Enter' && !wordInput.disabled && checkButton.style.display !== 'none') {
+        event.preventDefault();
+
+        synth.cancel(); // Clear speech queue
+        isSpeaking = false; // Reset speaking state
+
+        handleCheckAction();
+    }
+});
+speakButton.addEventListener('click', () => {
+    if (currentWordIndex < shuffledWords.length) {
+
+        synth.cancel(); // Clear speech queue
+        isSpeaking = false; // Reset speaking state
+
+        speakWord(shuffledWords[currentWordIndex].word);
+        if (containerDiv.classList.contains('input-visible') && !wordInput.disabled) {
+            wordInput.focus();
+        }
+    }
+});
+nextWordButton.addEventListener('click', () => {
+    currentWordIndex++;
+    // Do NOT increment totalProgress here since the answer was incorrect
+    loadWord();
+});
+modeRadios.forEach(radio => {
+    radio.addEventListener('change', (event) => {
+        currentMode = event.target.value;
+        currentWordIndex = 0;
+        totalProgress = 0; // Reset progress when changing modes
+        shuffleArray(shuffledWords);
+        loadWord();
+    });
+});
 
 // --- Initialization ---
 let speechInitialized = false;
 function initializeSpeech() {
     if (!speechInitialized) {
         try {
+            // Make sure synth is not paused
             if (synth.paused) synth.resume();
+
+            // Initialize with a silent utterance
             const silentUtterance = new SpeechSynthesisUtterance('');
             silentUtterance.volume = 0;
             synth.speak(silentUtterance);
+
+            // Mark as initialized
             speechInitialized = true;
-            console.log("Speech synthesis potentially initialized.");
-            const voices = synth.getVoices();
-            if (voices.length === 0) {
-                synth.onvoiceschanged = () => {
-                    const loadedVoices = synth.getVoices();
-                    if (loadedVoices.length > 0) {
-                        console.log("Voices loaded:", loadedVoices);
-                        loadWord();
-                    }
-                };
-            } else {
+            console.log("Speech synthesis initialized.");
+
+            // Make sure voices are loaded
+            if (!voices || voices.length === 0) {
+                console.log("No voices loaded yet, trying to load voices...");
+                loadVoices();
+
+                if (voices.length === 0) {
+                    // If still no voices, set up the onvoiceschanged event
+                    console.log("Still no voices, waiting for voices to load...");
+                    synth.onvoiceschanged = () => {
+                        loadVoices();
+                        if (voices.length > 0) {
+                            console.log("Voices loaded successfully:", voices.length);
+                            // Check if a mode is selected before loading a word
+                            const selectedRadio = document.querySelector('input[name="mode"]:checked');
+                            if (selectedRadio) {
+                                console.log(`Mode selected: ${selectedRadio.value}, loading word`);
+                                loadWord();
+                            } else {
+                                console.log('No mode selected yet, waiting for user selection');
+                            }
+                        }
+                    };
+                }
+            }
+
+            // Check if a mode is selected before loading a word
+            const selectedRadio = document.querySelector('input[name="mode"]:checked');
+            if (selectedRadio) {
+                console.log(`Mode selected: ${selectedRadio.value}, loading word`);
                 loadWord();
+            } else {
+                console.log('No mode selected yet, waiting for user selection');
             }
         } catch (error) {
             console.error("Speech synthesis initialization failed:", error);
@@ -476,22 +549,226 @@ function initializeSpeech() {
 }
 
 function initializeApp() {
+    console.log('Initializing app with wordsData:', wordsData ? wordsData.length + ' units' : 'no data');
     // Initialize unit index and shuffled words
     currentUnitIndex = 0;
-    shuffledWords = [...wordsData[currentUnitIndex].words];
+    currentWordIndex = 0;
     totalProgress = 0; // Track total words completed across units
-    promptDiv.textContent = 'Please select a mode to start.';
 
-    containerDiv.classList.remove('input-visible', 'attempts-visible', 'buttons-visible');
-    promptDiv.textContent = 'Please select a mode and click anywhere on the page to activate audio.';
-    progressDiv.textContent = `Mode: ${getModeName(currentMode)}`;
-    document.body.addEventListener('click', () => {
-        if (!speechInitialized) {
-            initializeSpeech();
+    // Reset UI elements
+    feedbackDiv.textContent = '';
+    resultDiv.style.display = 'none';
+    reviewDisplayDiv.style.display = 'none';
+    promptDisplayDiv.style.display = 'none';
+
+    if (wordsData && wordsData.length > 0 && wordsData[currentUnitIndex] && wordsData[currentUnitIndex].words) {
+        console.log(`Found ${wordsData[currentUnitIndex].words.length} words in unit ${wordsData[currentUnitIndex].unit}`);
+        shuffledWords = [...wordsData[currentUnitIndex].words];
+        shuffleArray(shuffledWords);
+
+        // Update UI
+        containerDiv.classList.remove('input-visible', 'attempts-visible', 'buttons-visible');
+        promptDiv.textContent = 'Please select a mode and click anywhere on the page to activate audio.';
+        progressDiv.textContent = `Level: ${currentLevel} | Mode: ${getModeName(currentMode)}`;
+
+        // Initialize speech and load first word
+        document.body.addEventListener('click', () => {
+            if (!speechInitialized) {
+                initializeSpeech();
+            }
+        }, { once: true });
+        setTimeout(initializeSpeech, 150);
+
+        // If a mode is already selected, load the first word
+        if (currentMode) {
+            const selectedRadio = document.querySelector(`input[name="mode"][value="${currentMode}"]`);
+            if (selectedRadio && selectedRadio.checked) {
+                console.log(`Mode already selected: ${currentMode}, loading first word`);
+                loadWord();
+            }
         }
-    }, { once: true });
-    setTimeout(initializeSpeech, 150);
+    } else {
+        shuffledWords = [];
+        console.error('No vocabulary data available for the current level');
+        promptDiv.textContent = 'Error: No vocabulary data available for this level. Please try selecting a different level.';
+        progressDiv.textContent = `Level: ${currentLevel} | No data available`;
+    }
+}
+
+// Rebuild the UI with the current data
+function rebuildUI() {
+    console.log('Rebuilding UI');
+    // Recreate the container content
+    containerDiv.innerHTML = `
+        <h1>Vocabulary Practice</h1>
+
+        <div class="level-selection">
+            <label for="level-selector">Select Level:</label>
+            <select id="level-selector">
+                <option value="C">Level HFC</option>
+                <option value="D">Level HFD</option>
+                <option value="E">Level HFE</option>
+                <option value="F">Level HFF</option>
+                <option value="G">Level HFG</option>
+                <option value="H">Level HFH</option>
+                <option value="J">Level HFI-J</option>
+            </select>
+        </div>
+
+        <div class="mode-selection">
+            <label>Select Mode:</label>
+            <label><input type="radio" name="mode" value="review" checked> Review</label>
+            <label><input type="radio" name="mode" value="dictation"> Dictation (IPA -> Word)</label>
+            <label><input type="radio" name="mode" value="listening"> Listening (Audio -> Word)</label>
+        </div>
+
+        <div id="review-display" class="display-area">
+            <span id="word-text"></span>
+            <span id="word-syllables"></span>
+            <span id="word-pronunciation"></span>
+            <span id="word-meaning-review" style="display: none;"></span>
+        </div>
+        <div id="prompt-display" class="display-area"></div>
+
+        <div id="prompt">Please select a mode to start.</div>
+
+        <input type="text" id="word-input" placeholder="Type the word here..." autocomplete="off">
+        <div id="attempt-counter"></div>
+
+        <div id="action-buttons">
+            <button id="speak-button">Speak Again</button>
+            <button id="check-button">Check</button>
+            <button id="next-word-button" style="display: none;">Next Word</button>
+        </div>
+
+        <div id="feedback"></div>
+
+        <div id="result">
+            <p id="correct-word"></p>
+            <p id="meaning"></p>
+        </div>
+
+        <div id="progress"></div>
+    `;
+
+    // Update DOM references after rebuilding the UI
+    // Re-assign all DOM references
+    const newContainerDiv = document.querySelector('.container');
+    const newWordInput = document.getElementById('word-input');
+    const newCheckButton = document.getElementById('check-button');
+    const newSpeakButton = document.getElementById('speak-button');
+    const newNextWordButton = document.getElementById('next-word-button');
+    const newFeedbackDiv = document.getElementById('feedback');
+    const newResultDiv = document.getElementById('result');
+    const newCorrectWordP = document.getElementById('correct-word');
+    const newMeaningP = document.getElementById('meaning');
+    const newProgressDiv = document.getElementById('progress');
+    const newPromptDiv = document.getElementById('prompt');
+    const newReviewDisplayDiv = document.getElementById('review-display');
+    const newWordTextSpan = document.getElementById('word-text');
+    const newWordSyllablesSpan = document.getElementById('word-syllables');
+    const newWordPronunciationSpan = document.getElementById('word-pronunciation');
+    const newWordMeaningReviewSpan = document.getElementById('word-meaning-review');
+    const newPromptDisplayDiv = document.getElementById('prompt-display');
+    const newAttemptCounterDiv = document.getElementById('attempt-counter');
+    const newModeRadios = document.querySelectorAll('input[name="mode"]');
+    const newActionButtonsDiv = document.getElementById('action-buttons');
+    const newLevelSelector = document.getElementById('level-selector');
+
+    // Update global references
+    containerDiv = newContainerDiv;
+    wordInput = newWordInput;
+    checkButton = newCheckButton;
+    speakButton = newSpeakButton;
+    nextWordButton = newNextWordButton;
+    feedbackDiv = newFeedbackDiv;
+    resultDiv = newResultDiv;
+    correctWordP = newCorrectWordP;
+    meaningP = newMeaningP;
+    progressDiv = newProgressDiv;
+    promptDiv = newPromptDiv;
+    reviewDisplayDiv = newReviewDisplayDiv;
+    wordTextSpan = newWordTextSpan;
+    wordSyllablesSpan = newWordSyllablesSpan;
+    wordPronunciationSpan = newWordPronunciationSpan;
+    wordMeaningReviewSpan = newWordMeaningReviewSpan;
+    promptDisplayDiv = newPromptDisplayDiv;
+    attemptCounterDiv = newAttemptCounterDiv;
+    modeRadios = newModeRadios;
+    actionButtonsDiv = newActionButtonsDiv;
+
+    console.log(`Setting level selector to: ${currentLevel}`);
+    newLevelSelector.value = currentLevel;
+    console.log(`Level selector value is now: ${newLevelSelector.value}`);
+
+    // Re-attach event listeners
+    checkButton.addEventListener('click', handleCheckAction);
+    wordInput.addEventListener('keypress', (event) => {
+        if (event.key === 'Enter' && !wordInput.disabled && checkButton.style.display !== 'none') {
+            event.preventDefault();
+            handleCheckAction();
+        }
+    });
+    speakButton.addEventListener('click', () => {
+        if (currentWordIndex < shuffledWords.length) {
+            speakWord(shuffledWords[currentWordIndex].word);
+            if (containerDiv.classList.contains('input-visible') && !wordInput.disabled) {
+                wordInput.focus();
+            }
+        }
+    });
+    nextWordButton.addEventListener('click', () => {
+        currentWordIndex++;
+        // Do NOT increment totalProgress here since the answer was incorrect
+        loadWord();
+    });
+    modeRadios.forEach(radio => {
+        radio.addEventListener('change', (event) => {
+            console.log(`Mode changed to: ${event.target.value}`);
+            currentMode = event.target.value;
+            currentWordIndex = 0;
+            totalProgress = 0; // Reset progress when changing modes
+
+            // Make sure we have shuffled words
+            if (!shuffledWords || shuffledWords.length === 0) {
+                if (wordsData && wordsData.length > 0 && wordsData[currentUnitIndex] && wordsData[currentUnitIndex].words) {
+                    console.log('Initializing shuffled words for mode change');
+                    shuffledWords = [...wordsData[currentUnitIndex].words];
+                }
+            }
+
+            // Shuffle and load
+            if (shuffledWords && shuffledWords.length > 0) {
+                shuffleArray(shuffledWords);
+                loadWord();
+            } else {
+                console.error('No words available to load');
+                promptDiv.textContent = 'Error: No words available. Please try selecting a different level.';
+            }
+        });
+    });
+
+    // Add level selector event listener
+    newLevelSelector.addEventListener('change', (event) => {
+        const newLevel = event.target.value;
+        console.log(`Level changed to: ${newLevel}`);
+        // Always load the vocabulary data when the level changes
+        console.log(`Loading vocabulary data for level: ${newLevel}`);
+        loadVocabularyData(newLevel);
+    });
+
+    // Force a mode selection if one is already checked
+    const selectedRadio = document.querySelector('input[name="mode"]:checked');
+    if (selectedRadio) {
+        console.log(`Mode already selected: ${selectedRadio.value}, triggering change event`);
+        const event = new Event('change');
+        selectedRadio.dispatchEvent(event);
+    }
 }
 
 // Start loading data when the page loads
-document.addEventListener('DOMContentLoaded', loadVocabularyData);
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM content loaded, initializing application...');
+    console.log(`Initial level set to: ${currentLevel}`);
+    loadVocabularyData(currentLevel);
+});
