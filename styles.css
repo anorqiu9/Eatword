@@ -27,26 +27,34 @@ h1 {
     font-size: 2.2em;
 }
 
-.top-controls {
+.controls {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     margin-bottom: 15px;
     text-align: left;
+    flex-wrap: nowrap;
+    overflow-x: auto;
 }
 
-.level-buttons, .mode-buttons {
+.level-selection {
     display: flex;
     align-items: center;
     gap: 5px;
+    flex-wrap: nowrap;
+    white-space: nowrap;
 }
 
-.level-buttons span, .mode-buttons span {
+.controls span {
     font-weight: normal;
     margin-right: 5px;
 }
 
-.level-btn {
+.controls span:nth-of-type(2) {
+    margin-left: 15px;
+}
+
+.level-button {
     padding: 5px 10px;
     border: none;
     background-color: transparent;
@@ -57,40 +65,46 @@ h1 {
     box-shadow: none;
 }
 
-.level-btn:hover {
+.level-button:hover {
     background-color: #f0f0f0;
 }
 
-.level-btn.active {
+.level-button.active {
     background-color: #f0f0f0;
     color: #333;
     font-weight: bold;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
-.mode-btn {
+.mode-button {
     padding: 5px 10px;
     border: none;
     background-color: transparent;
-    border-radius: 20px;
+    border-radius: 4px;
     cursor: pointer;
     font-size: 0.9em;
     transition: all 0.2s ease;
     position: relative;
+    margin-left: 5px;
+    white-space: nowrap;
 }
 
-.mode-btn:hover {
+.mode-button:hover {
     background-color: #f8f8f8;
 }
 
-.mode-btn.active {
+.mode-button.active {
     background-color: #f0f0f0;
     color: #333;
     font-weight: bold;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 .shuffle-toggle {
     display: flex;
     align-items: center;
+    margin-left: 10px;
+    white-space: nowrap;
 }
 
 .shuffle-toggle label {
@@ -102,6 +116,7 @@ h1 {
 
 .shuffle-toggle input[type="checkbox"] {
     margin-right: 5px;
+    margin-left: 5px;
 }
 
 .divider {
