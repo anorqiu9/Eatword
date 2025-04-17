@@ -254,7 +254,7 @@ function loadWord() {
     if (!wordsData || wordsData.length === 0) {
         console.error('No vocabulary data available');
         promptDiv.textContent = 'Error: No vocabulary data available. Please try selecting a different level.';
-        progressDiv.textContent = `Level: ${currentLevel} | No data available`;
+        progressDiv.textContent = `Level: ${currentLevel} ${currentUnitIndex + 1} | No data available`;
         return;
     }
 
@@ -274,7 +274,7 @@ function loadWord() {
         } else {
             console.error('No words available in this unit');
             promptDiv.textContent = 'Error: No words available in this unit. Please try selecting a different level.';
-            progressDiv.textContent = `Level: ${currentLevel} | No words available`;
+            progressDiv.textContent = `Level: ${currentLevel} ${currentUnitIndex + 1} | No words available`;
             return;
         }
     }
@@ -295,9 +295,12 @@ function loadWord() {
 
             // Update UI to indicate we're reviewing incorrect words
             promptDiv.textContent = `Review Mode: Practicing ${incorrectWords.length} words you got wrong. Master them all!`;
-            progressDiv.textContent = `Level: ${currentLevel} | Mode: ${getModeName(currentMode)} | Reviewing incorrect words: ${incorrectWords.length} remaining`;
+            progressDiv.textContent = `Level: ${currentLevel} ${currentUnitIndex + 1} | Mode: ${getModeName(currentMode)} | Reviewing incorrect words: ${incorrectWords.length} remaining`;
 
             console.log(`Switching to incorrect words review mode. ${incorrectWords.length} words to review.`);
+
+            // Continue with displaying the first incorrect word
+            loadWord();
             return;
         }
 
@@ -313,35 +316,43 @@ function loadWord() {
             reviewDisplayDiv.style.display = 'none';
             promptDisplayDiv.style.display = 'none';
             containerDiv.classList.remove('input-visible', 'attempts-visible', 'buttons-visible');
-            progressDiv.textContent = `Level: ${currentLevel} | Mode: ${getModeName(currentMode)} | All incorrect words mastered!`;
+            progressDiv.textContent = `Level: ${currentLevel} ${currentUnitIndex + 1} | Mode: ${getModeName(currentMode)} | All incorrect words mastered!`;
 
-            // Add a button to continue to the next unit
-            const continueButton = document.createElement('button');
-            continueButton.textContent = 'Continue to Next Unit';
-            continueButton.className = 'continue-button';
-            continueButton.addEventListener('click', () => {
-                // Continue with normal progression
-                currentUnitIndex++;
-                if (currentUnitIndex < wordsData.length) {
-                    shuffledWords = [...wordsData[currentUnitIndex].words];
-                    if (shuffleEnabled) {
-                        shuffleArray(shuffledWords);
-                        console.log('Words shuffled for next unit');
+            // Check if there are more units to continue to
+            if (currentUnitIndex + 1 < wordsData.length) {
+                // Speak a congratulatory message
+                const congratsMessage = 'Great job! Moving to the next unit.';
+                promptDiv.textContent = congratsMessage;
+                speakWord(congratsMessage);
+
+                // Automatically continue to the next unit after a delay
+                setTimeout(() => {
+                    // Continue with normal progression
+                    currentUnitIndex++;
+                    if (currentUnitIndex < wordsData.length) {
+                        shuffledWords = [...wordsData[currentUnitIndex].words];
+                        if (shuffleEnabled) {
+                            shuffleArray(shuffledWords);
+                            console.log('Words shuffled for next unit');
+                        } else {
+                            console.log('Words kept in original order for next unit');
+                        }
+                        currentWordIndex = 0;
+                        loadWord();
                     } else {
-                        console.log('Words kept in original order for next unit');
+                        // All units completed
+                        promptDiv.textContent = 'Congratulations! You have completed all units!';
+                        progressDiv.textContent = `Level: ${currentLevel} ${currentUnitIndex} | Mode: ${getModeName(currentMode)} | Total ${totalProgress} words completed.`;
+                        speakWord('Congratulations! You have completed all units!');
                     }
-                    currentWordIndex = 0;
-                    loadWord();
-                } else {
-                    // All units completed
-                    promptDiv.textContent = 'Congratulations! You have completed all units!';
-                    progressDiv.textContent = `Level: ${currentLevel} | Mode: ${getModeName(currentMode)} | Total ${totalProgress} words completed.`;
-                    continueButton.style.display = 'none';
-                }
-            });
-
-            // Add the button to the container
-            containerDiv.appendChild(continueButton);
+                }, 3000); // Wait 3 seconds before moving to the next unit
+            } else {
+                // No more units, show completion message
+                const completionMessage = 'Congratulations! You have completed all units in this level!';
+                promptDiv.textContent = completionMessage;
+                progressDiv.textContent = `Level: ${currentLevel} ${currentUnitIndex} | Mode: ${getModeName(currentMode)} | Total ${totalProgress} words completed.`;
+                speakWord(completionMessage);
+            }
             return;
         }
 
@@ -354,7 +365,7 @@ function loadWord() {
             reviewDisplayDiv.style.display = 'none';
             promptDisplayDiv.style.display = 'none';
             containerDiv.classList.remove('input-visible', 'attempts-visible', 'buttons-visible');
-            progressDiv.textContent = `Level: ${currentLevel} | Mode: ${getModeName(currentMode)} | Total ${totalProgress} words completed.`;
+            progressDiv.textContent = `Level: ${currentLevel} ${currentUnitIndex + 1} | Mode: ${getModeName(currentMode)} | Total ${totalProgress} words completed.`;
             return;
         }
 
@@ -544,12 +555,15 @@ function updateAttemptCounter() {
 function updateProgress() {
     const totalWords = getTotalWords();
 
+    // Get the current unit number (add 1 for display since arrays are 0-indexed)
+    const currentUnitNumber = currentUnitIndex + 1;
+
     if (isReviewingIncorrectWords) {
         // Show progress for incorrect words review
-        progressDiv.textContent = `Level: ${currentLevel} | Mode: ${getModeName(currentMode)} | Progress: ${totalProgress + 1} / ${totalWords} | Reviewing incorrect words: ${incorrectWords.length} remaining`;
+        progressDiv.textContent = `Level: ${currentLevel} ${currentUnitNumber} | Mode: ${getModeName(currentMode)} | Progress: ${totalProgress + 1} / ${totalWords} | Reviewing incorrect words: ${incorrectWords.length} remaining`;
     } else {
         // Show normal progress
-        let progressText = `Level: ${currentLevel} | Mode: ${getModeName(currentMode)} | Progress: ${totalProgress + 1} / ${totalWords}`;
+        let progressText = `Level: ${currentLevel} ${currentUnitNumber} | Mode: ${getModeName(currentMode)} | Progress: ${totalProgress + 1} / ${totalWords}`;
 
         // Add incorrect words count if there are any
         if (incorrectWords.length > 0) {
