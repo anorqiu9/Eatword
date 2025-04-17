@@ -344,6 +344,11 @@ class UIManager {
         this.displayReviewMode(wordData);
     }
 
+    // Speak the word automatically for all modes
+    setTimeout(() => {
+      this.app.speechManager.speak(wordData.word, this.elements.feedbackDiv);
+    }, 500);
+
     // Update progress and active buttons
     this.updateProgress();
     this.updateActiveButtons();
@@ -390,6 +395,11 @@ class UIManager {
     if (this.elements.wordInput) {
       this.elements.wordInput.focus();
     }
+
+    // Speak the word automatically
+    setTimeout(() => {
+      this.app.speechManager.speak(wordData.word, this.elements.feedbackDiv);
+    }, 500);
   }
 
   /**
@@ -471,11 +481,26 @@ class UIManager {
     if (!this.elements.progressDiv) return;
 
     const wordManager = this.app.wordManager;
-    const totalWords = wordManager.getTotalWords();
     const incorrectCount = wordManager.getIncorrectWordsCount();
     const isReviewing = wordManager.isReviewingIncorrect();
 
-    let progressText = `Level: ${wordManager.currentLevel} | Mode: ${this.getModeName(this.currentMode)} | Progress: ${wordManager.totalProgress + 1} / ${totalWords}`;
+    // Get the current unit's total words count
+    let totalWords = 0;
+    if (isReviewing) {
+      totalWords = wordManager.incorrectWords.length;
+    } else if (wordManager.wordsData &&
+               wordManager.wordsData.length > 0 &&
+               wordManager.currentUnitIndex < wordManager.wordsData.length) {
+      const currentUnit = wordManager.wordsData[wordManager.currentUnitIndex];
+      if (currentUnit && currentUnit.words) {
+        totalWords = currentUnit.words.length;
+      }
+    }
+
+    // Calculate current index (add 1 because it's 0-based)
+    const currentIndex = wordManager.currentWordIndex + 1;
+
+    let progressText = `Level: ${wordManager.currentLevel} | Mode: ${this.getModeName(this.currentMode)} | Progress: ${currentIndex} / ${totalWords}`;
 
     if (isReviewing) {
       progressText += ` | Reviewing incorrect words: ${incorrectCount} remaining`;
@@ -637,7 +662,17 @@ class UIManager {
     if (!this.elements.progressDiv) return;
 
     const currentIndex = this.app.wordManager.currentWordIndex + 1;
-    const totalWords = this.app.wordManager.shuffledWords.length;
+
+    // Get the total words count for all units in the level
+    let totalWords = 0;
+    const wordManager = this.app.wordManager;
+
+    if (wordManager.isReviewingIncorrect()) {
+      totalWords = wordManager.incorrectWords.length;
+    } else {
+      // Use the getTotalWords method to get the total for all units
+      totalWords = wordManager.getTotalWords();
+    }
 
     this.elements.progressDiv.textContent = `Level: ${this.app.wordManager.currentLevel} | Mode: ${this.getModeName(this.currentMode)} | Progress: ${currentIndex} / ${totalWords}`;
   }
