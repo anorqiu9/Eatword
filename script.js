@@ -757,7 +757,7 @@ function rebuildUI() {
                 <button class="mode-btn ${currentMode === 'listening' ? 'active' : ''}" data-mode="listening" title="Listen to the word, type what you hear">Listening</button>
             </div>
 
-            <div class="menu">
+            <div class="menu" ${currentMode !== 'review' ? 'style="display: none;"' : ''}>
                 <button id="menu-toggle">⚙️</button>
                 <div id="menu-content" class="menu-content">
                     <label>
@@ -938,6 +938,28 @@ function rebuildUI() {
                 currentWordIndex = 0;
                 totalProgress = 0; // Reset progress when changing modes
 
+                // Update scramble toggle state based on mode
+                const scrambleToggle = document.getElementById('scramble-words-checkbox');
+                if (scrambleToggle) {
+                    scrambleToggle.disabled = currentMode !== 'review';
+                    // If not in review mode, disable scramble words
+                    if (currentMode !== 'review' && scrambleWordsEnabled) {
+                        scrambleWordsEnabled = false;
+                        scrambleToggle.checked = false;
+                    }
+                }
+
+                // Show/hide menu based on mode
+                const menuDiv = document.querySelector('.menu');
+                if (menuDiv) {
+                    menuDiv.style.display = currentMode === 'review' ? '' : 'none';
+                    // Also hide the menu content if it's visible
+                    const menuContent = document.getElementById('menu-content');
+                    if (menuContent && menuContent.classList.contains('visible')) {
+                        menuContent.classList.remove('visible');
+                    }
+                }
+
                 // Make sure we have shuffled words
                 if (!shuffledWords || shuffledWords.length === 0) {
                     if (wordsData && wordsData.length > 0 && wordsData[currentUnitIndex] && wordsData[currentUnitIndex].words) {
@@ -982,6 +1004,9 @@ function rebuildUI() {
             shuffleEnabled = event.target.checked;
             console.log(`Shuffle ${shuffleEnabled ? 'enabled' : 'disabled'}`);
 
+            // Hide the menu after selection
+            menuContent.classList.remove('visible');
+
             // If we have words loaded, reshuffle or sort them based on the new setting
             if (shuffledWords && shuffledWords.length > 0) {
                 if (shuffleEnabled) {
@@ -1025,12 +1050,32 @@ function rebuildUI() {
     // Add scramble toggle event listener
     const scrambleToggle = document.getElementById('scramble-words-checkbox');
     if (scrambleToggle) {
+        // Only enable the scramble toggle in review mode
+        scrambleToggle.disabled = currentMode !== 'review';
         scrambleToggle.checked = scrambleWordsEnabled;
+
+        // Add a note that it's only available in review mode
+        const scrambleLabel = scrambleToggle.parentElement;
+        const noteSpan = document.createElement('span');
+        noteSpan.className = 'mode-note';
+        noteSpan.textContent = ' (Review mode only)';
+        noteSpan.style.fontSize = '0.8em';
+        noteSpan.style.color = '#666';
+        noteSpan.style.fontStyle = 'italic';
+
+        // Check if the note is already added
+        if (!scrambleLabel.querySelector('.mode-note')) {
+            scrambleLabel.appendChild(noteSpan);
+        }
+
         scrambleToggle.addEventListener('change', (event) => {
             scrambleWordsEnabled = event.target.checked;
             console.log(`Scramble ${scrambleWordsEnabled ? 'enabled' : 'disabled'}`);
 
-            // Reload words if scramble is enabled
+            // Hide the menu after selection
+            menuContent.classList.remove('visible');
+
+            // Reload words if scramble is enabled and in review mode
             if (scrambleWordsEnabled && currentMode === 'review') {
                 scrambleCurrentWords();
                 loadWord();
