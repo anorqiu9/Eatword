@@ -28,6 +28,22 @@
             <label><input type="radio" name="mode" value="review" checked> Review</label>
             <label><input type="radio" name="mode" value="dictation"> Dictation (IPA -> Word)</label>
             <label><input type="radio" name="mode" value="listening"> Listening (Audio -> Word)</label>
+            
+            <div class="settings-menu">
+                <button id="settings-button" aria-expanded="false" aria-label="Toggle settings menu">
+                    ⚙️
+                </button>
+                <div id="settings-dropdown" class="dropdown-content">
+                    <label>
+                        <input type="checkbox" id="shuffle-toggle">
+                        <span>Shuffling Word List</span>
+                    </label>
+                    <label>
+                        <input type="checkbox" id="scramble-words-checkbox">
+                        <span>Scramble Words</span>
+                    </label>
+                </div>
+            </div>
         </div>
 
         <div id="review-display" class="display-area">
