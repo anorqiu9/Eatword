@@ -91,6 +91,7 @@ const MAX_ATTEMPTS = 3;
 let currentMode = 'review';
 let isReviewingIncorrectWords = false; // Flag to indicate if we're reviewing incorrect words
 let shuffleEnabled = false; // Flag to control whether words should be shuffled (default: not shuffled)
+let scrambleWordsEnabled = false; // Flag to control whether words should be scrambled
 let synth = window.speechSynthesis;
 let voices = [];
 let englishVoice = null;
@@ -126,6 +127,16 @@ function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+function scrambleCurrentWords() {
+    if (shuffledWords && shuffledWords.length > 0) {
+        shuffledWords = shuffledWords.map(wordObj => {
+            const scrambledWord = wordObj.word.split('').sort(() => Math.random() - 0.5).join('');
+            return { ...wordObj, scrambledWord };
+        });
+        console.log('Words scrambled');
     }
 }
 
@@ -391,7 +402,7 @@ function loadWord() {
     wordInput.value = ''; wordInput.disabled = false;
     checkButton.disabled = false; checkButton.style.display = 'inline-block';
     nextWordButton.style.display = 'none';
-    speakButton.disabled = false; speakButton.style.display = 'inline-block';
+    speakButton.disabled = false; speakButton.style.display = 'none';
     attemptCounterDiv.textContent = '';
     reviewDisplayDiv.style.display = 'none'; promptDisplayDiv.style.display = 'none';
     promptDisplayDiv.classList.remove('missing-pronunciation');
@@ -403,7 +414,7 @@ function loadWord() {
     switch (currentMode) {
         case 'review':
             promptDiv.textContent = '';
-            wordTextSpan.textContent = currentWordData.word;
+            wordTextSpan.textContent = scrambleWordsEnabled ? currentWordData.scrambledWord || currentWordData.word : currentWordData.word;
             wordSyllablesSpan.textContent = currentWordData.syllables;
             wordPronunciationSpan.textContent = currentWordData.pronunciation || pronunciationPlaceholder;
             wordMeaningReviewSpan.textContent = currentWordData.meaning;
@@ -411,7 +422,7 @@ function loadWord() {
             reviewDisplayDiv.style.display = 'block';
             containerDiv.classList.add('input-visible');
             checkButton.textContent = 'Check';
-            speakButton.style.display = 'inline-block';
+            speakButton.style.display = 'none';
             wordInput.focus();
             break;
         case 'dictation':
@@ -427,14 +438,14 @@ function loadWord() {
             promptDisplayDiv.style.display = 'block';
             containerDiv.classList.add('input-visible', 'attempts-visible');
             checkButton.textContent = 'Check';
-            speakButton.style.display = 'inline-block';
+            speakButton.style.display = 'none';
             updateAttemptCounter();
             if (!wordInput.disabled) wordInput.focus();
             break;
         case 'listening':
             promptDiv.textContent = '';
             containerDiv.classList.add('input-visible', 'attempts-visible');
-            checkButton.textContent = 'Check'; speakButton.style.display = 'inline-block';
+            checkButton.textContent = 'Check'; speakButton.style.display = 'none';
             updateAttemptCounter();
             wordInput.focus();
             break;
@@ -746,11 +757,18 @@ function rebuildUI() {
                 <button class="mode-btn ${currentMode === 'listening' ? 'active' : ''}" data-mode="listening" title="Listen to the word, type what you hear">Listening</button>
             </div>
 
-            <div class="shuffle-toggle">
-                <label>
-                    <input type="checkbox" id="shuffle-toggle" ${shuffleEnabled ? 'checked' : ''}>
-                    <span>Shuffling</span>
-                </label>
+            <div class="menu">
+                <button id="menu-toggle">⚙️</button>
+                <div id="menu-content" class="menu-content">
+                    <label>
+                        <input type="checkbox" id="shuffle-toggle" ${shuffleEnabled ? 'checked' : ''}>
+                        <span>Shuffle Word List</span>
+                    </label>
+                    <label>
+                        <input type="checkbox" id="scramble-words-checkbox" ${scrambleWordsEnabled ? 'checked' : ''}>
+                        <span>Scramble Words</span>
+                    </label>
+                </div>
             </div>
         </div>
 
@@ -778,7 +796,7 @@ function rebuildUI() {
         <div id="attempt-counter"></div>
 
         <div id="action-buttons">
-            <button id="speak-button">Speak Again</button>
+            <button id="speak-button" style="display: none;">Speak Again</button>
             <button id="check-button">Check</button>
             <button id="next-word-button">Next Word</button>
         </div>
@@ -940,6 +958,15 @@ function rebuildUI() {
 
     // Level buttons are now handled directly in their own event listeners above
 
+    // Add event listener for menu toggle
+    const menuToggle = document.getElementById('menu-toggle');
+    const menuContent = document.getElementById('menu-content');
+    if (menuToggle && menuContent) {
+        menuToggle.addEventListener('click', () => {
+            menuContent.classList.toggle('visible');
+        });
+    }
+
     // Add shuffle toggle event listener
     const shuffleToggle = document.getElementById('shuffle-toggle');
     if (shuffleToggle) {
@@ -984,6 +1011,22 @@ function rebuildUI() {
                 // Reset to the beginning of the current set of words and reload
                 currentWordIndex = 0;
                 loadWord(); // Always reload the word to update the display
+            }
+        });
+    }
+
+    // Add scramble toggle event listener
+    const scrambleToggle = document.getElementById('scramble-words-checkbox');
+    if (scrambleToggle) {
+        scrambleToggle.checked = scrambleWordsEnabled;
+        scrambleToggle.addEventListener('change', (event) => {
+            scrambleWordsEnabled = event.target.checked;
+            console.log(`Scramble ${scrambleWordsEnabled ? 'enabled' : 'disabled'}`);
+
+            // Reload words if scramble is enabled
+            if (scrambleWordsEnabled && currentMode === 'review') {
+                scrambleCurrentWords();
+                loadWord();
             }
         });
     }
