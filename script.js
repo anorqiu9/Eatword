@@ -897,6 +897,13 @@ function rebuildUI() {
         }
     });
 
+    // Make the prompt display area (used in dictation mode) clickable to speak the word
+    promptDisplayDiv.addEventListener('click', () => {
+        if (currentWordIndex < shuffledWords.length) {
+            speakWord(shuffledWords[currentWordIndex].word);
+        }
+    });
+
     // Add event listeners for level buttons
     document.querySelectorAll('.level-btn').forEach(button => {
         button.addEventListener('click', () => {
