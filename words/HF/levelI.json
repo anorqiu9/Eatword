@@ -1,0 +1,64 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2025-04-14",
+  "level": "I",
+  "units": [
+    {
+      "unit": "Unit 1",
+      "words": [
+        {"word": "avoid", "syllables": "a / void", "pronunciation": "/əˈvɔɪd/", "meaning": "避免"}
+      ]
+    },
+    {
+      "unit": "Unit 2",
+      "words": [
+        {"word": "ant", "syllables": "ant", "pronunciation": "/ænt/", "meaning": "蚂蚁"}
+      ]
+    },
+    {
+      "unit": "Unit 3",
+      "words": [
+        {"word": "be absent", "syllables": "be · ab / sent", "pronunciation": "/bi ˈæbsənt/", "meaning": "缺席"}
+      ]
+    },
+    {
+      "unit": "Unit 4",
+      "words": [
+        {"word": "awesome", "syllables": "awe / some", "pronunciation": "/ˈɔːsəm/", "meaning": "很棒的"},
+        {"word": "boring", "syllables": "bor / ing", "pronunciation": "/ˈbɔːrɪŋ/", "meaning": "无聊的"},
+        {"word": "bright", "syllables": "bright", "pronunciation": "/braɪt/", "meaning": "明亮的"},
+        {"word": "colorful", "syllables": "col / or / ful", "pronunciation": "/ˈkʌlərfəl/", "meaning": "多彩的"},
+        {"word": "dangerous", "syllables": "dan / ger / ous", "pronunciation": "/ˈdeɪndʒərəs/", "meaning": "危险的"},
+        {"word": "disappointing", "syllables": "dis / ap / poin / ting", "pronunciation": "/ˌdɪsəˈpɔɪntɪŋ/", "meaning": "令人失望的"},
+        {"word": "disgusting", "syllables": "dis / gus / ting", "pronunciation": "/dɪsˈɡʌstɪŋ/", "meaning": "恶心的"},
+        {"word": "exciting", "syllables": "ex / ci / ting", "pronunciation": "/ɪkˈsaɪtɪŋ/", "meaning": "激动人心的"},
+        {"word": "fascinating", "syllables": "fas / ci / na / ting", "pronunciation": "/ˈfæsɪˌneɪtɪŋ/", "meaning": "迷人的"},
+        {"word": "frightening", "syllables": "fright / en / ing", "pronunciation": "/ˈfraɪtənɪŋ/", "meaning": "可怕的"},
+        {"word": "huge", "syllables": "huge", "pronunciation": "/hjuːdʒ/", "meaning": "巨大的"},
+        {"word": "long", "syllables": "long", "pronunciation": "/lɔːŋ/", "meaning": "长的"},
+        {"word": "massive", "syllables": "mas / sive", "pronunciation": "/ˈmæsɪv/", "meaning": "巨大的"},
+        {"word": "pointy", "syllables": "poin / ty", "pronunciation": "/ˈpɔɪnti/", "meaning": "尖的"},
+        {"word": "sharp", "syllables": "sharp", "pronunciation": "/ʃɑːrp/", "meaning": "锋利的"},
+        {"word": "tiny", "syllables": "ti / ny", "pronunciation": "/ˈtaɪni/", "meaning": "微小的"},
+        {"word": "beak", "syllables": "beak", "pronunciation": "/biːk/", "meaning": "鸟喙"},
+        {"word": "claws", "syllables": "claws", "pronunciation": "/klɔːz/", "meaning": "爪子"},
+        {"word": "feathers", "syllables": "fea / thers", "pronunciation": "/ˈfɛðərz/", "meaning": "羽毛"},
+        {"word": "horns", "syllables": "horns", "pronunciation": "/hɔːrnz/", "meaning": "角"},
+        {"word": "spikes", "syllables": "spikes", "pronunciation": "/spaɪks/", "meaning": "尖刺"},
+        {"word": "teeth", "syllables": "teeth", "pronunciation": "/tiːθ/", "meaning": "牙齿"}
+      ]
+    },
+    {
+      "unit": "Unit 5",
+      "words": [
+        {"word": "blizzard", "syllables": "bliz / zard", "pronunciation": "/ˈblɪzərd/", "meaning": "暴风雪"}
+      ]
+    },
+    {
+      "unit": "Unit 6",
+      "words": [
+        {"word": "Computer Club", "syllables": "Com / pu / ter · Club", "pronunciation": "/kəmˈpjuːtər klʌb/", "meaning": "电脑俱乐部"}
+      ]
+    }
+  ]
+}
