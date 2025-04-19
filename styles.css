@@ -43,6 +43,102 @@ h1 {
     gap: 5px;
 }
 
+/* Level dropdown styles */
+.level-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.level-dropdown-btn {
+    padding: 5px 10px;
+    border: none;
+    background-color: transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: all 0.2s ease;
+    box-shadow: none;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.level-dropdown-btn:hover {
+    background-color: #f0f0f0;
+}
+
+.level-dropdown-btn.active {
+    background-color: #f0f0f0;
+    color: #333;
+    font-weight: bold;
+}
+
+.level-dropdown-content {
+    display: none;
+    position: absolute;
+    left: 0;
+    top: 100%;
+    background-color: #f5f5f5;
+    width: 60px;
+    border: 1px solid #ddd;
+    z-index: 1;
+    border-radius: 2px;
+    padding: 3px 0;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.level-dropdown-content.visible {
+    display: block;
+}
+
+.unit-option {
+    padding: 5px 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    display: flex;
+    align-items: center;
+    position: relative;
+    font-size: 0.9em;
+    justify-content: center;
+    border-bottom: 1px solid #eee;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+.unit-option:hover {
+    background-color: #f0f0f0;
+}
+
+.checkbox-indicator {
+    margin-right: 5px;
+    font-size: 0.9em;
+    display: inline-block;
+    width: 16px;
+    text-align: center;
+}
+
+.unit-tooltip {
+    display: none;
+    position: absolute;
+    background-color: #333;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    white-space: nowrap;
+    left: 100%;
+    top: 0;
+    margin-left: 10px;
+    z-index: 2;
+}
+
+.unit-option:hover .unit-tooltip {
+    display: block;
+}
+
 .level-buttons span, .mode-buttons span {
     font-weight: normal;
     margin-right: 5px;

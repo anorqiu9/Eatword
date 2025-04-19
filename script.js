@@ -35,11 +35,24 @@ async function loadVocabularyData(level = currentLevel) {
         }
         console.log(`Vocabulary data loaded successfully (Level ${currentLevel}, version ${data.version}, last updated ${data.lastUpdated})`);
 
-        // Rebuild the UI
+        // Store available units for this level
+        availableUnits[currentLevel] = wordsData.map((unit, index) => ({
+            index,
+            name: unit.unit || `Unit ${index + 1}`,
+            wordCount: unit.words ? unit.words.length : 0
+        }));
+
+        // Initialize selected units if not already set
+        if (!selectedUnits[currentLevel]) {
+            // By default, select all units
+            selectedUnits[currentLevel] = availableUnits[currentLevel].map(unit => unit.index);
+        }
+
+        // Rebuild the UI with the loaded data
         rebuildUI();
 
-        // Initialize the app
-        initializeApp();
+        // Initialize the app (only once)
+        // initializeApp() is called from rebuildUI(), so we don't need to call it again here
     } catch (error) {
         console.error(`Error loading vocabulary data for Level ${level}:`, error);
         document.querySelector('.container').innerHTML = `
@@ -84,6 +97,8 @@ let currentUnitIndex = 0;
 let shuffledWords = [];
 let incorrectWords = []; // Array to store words that were answered incorrectly
 let totalProgress = 0; // Track total words completed across units
+let selectedUnits = {}; // Object to track which units are selected for each level
+let availableUnits = {}; // Object to store available units for each level
 
 let currentWordIndex = 0;
 let incorrectAttempts = 0;
@@ -265,16 +280,38 @@ function loadWord() {
     if (!wordsData || wordsData.length === 0) {
         console.error('No vocabulary data available');
         promptDiv.textContent = 'Error: No vocabulary data available. Please try selecting a different level.';
-        progressDiv.textContent = `Level: ${currentLevel} ${currentUnitIndex + 1} | No data available`;
+        progressDiv.textContent = `Level: ${currentLevel} | No data available | Mode: ${getModeName(currentMode)}`;
         return;
     }
 
     // Check if we have valid shuffled words
     if (!shuffledWords || shuffledWords.length === 0) {
-        console.log('No shuffled words available, attempting to load from wordsData');
-        if (wordsData && wordsData.length > 0 && wordsData[currentUnitIndex] && wordsData[currentUnitIndex].words && wordsData[currentUnitIndex].words.length > 0) {
-            console.log('Loading words from current unit');
-            shuffledWords = [...wordsData[currentUnitIndex].words];
+        console.log('No shuffled words available');
+
+        // Check if any units are selected
+        const selectedUnitIndices = selectedUnits[currentLevel] || [];
+        if (selectedUnitIndices.length === 0) {
+            console.log('No units selected for the current level');
+            promptDiv.textContent = 'Please select at least one unit to practice.';
+            progressDiv.textContent = `Level: ${currentLevel} | No units selected | Mode: ${getModeName(currentMode)}`;
+            return;
+        }
+
+        // Try to load words from selected units
+        console.log('Attempting to load words from selected units');
+        shuffledWords = [];
+        selectedUnitIndices.forEach(unitIndex => {
+            if (wordsData[unitIndex] && wordsData[unitIndex].words) {
+                const unitWords = wordsData[unitIndex].words.map(word => ({
+                    ...word,
+                    unitIndex // Add unit index to track which unit each word belongs to
+                }));
+                shuffledWords = shuffledWords.concat(unitWords);
+            }
+        });
+
+        if (shuffledWords.length > 0) {
+            console.log(`Loaded ${shuffledWords.length} words from selected units`);
             if (shuffleEnabled) {
                 shuffleArray(shuffledWords);
                 console.log('Words shuffled');
@@ -283,9 +320,9 @@ function loadWord() {
             }
             currentWordIndex = 0;
         } else {
-            console.error('No words available in this unit');
-            promptDiv.textContent = 'Error: No words available in this unit. Please try selecting a different level.';
-            progressDiv.textContent = `Level: ${currentLevel} ${currentUnitIndex + 1} | No words available`;
+            console.error('No words available in the selected units');
+            promptDiv.textContent = 'Error: No words available in the selected units. Please select different units.';
+            progressDiv.textContent = `Level: ${currentLevel} | No words available | Mode: ${getModeName(currentMode)}`;
             return;
         }
     }
@@ -566,15 +603,18 @@ function updateAttemptCounter() {
 function updateProgress() {
     const totalWords = getTotalWords();
 
-    // Get the current unit number (add 1 for display since arrays are 0-indexed)
-    const currentUnitNumber = currentUnitIndex + 1;
+    // Get selected units for display
+    const selectedUnitIndices = selectedUnits[currentLevel] || [];
+    const selectedUnitsText = selectedUnitIndices.length > 0 ?
+        `Units: ${selectedUnitIndices.map(i => i + 1).join(', ')}` :
+        'No units selected';
 
     if (isReviewingIncorrectWords) {
         // Show progress for incorrect words review
-        progressDiv.textContent = `Level: ${currentLevel} ${currentUnitNumber} | Mode: ${getModeName(currentMode)} | Progress: ${totalProgress + 1} / ${totalWords} | Reviewing incorrect words: ${incorrectWords.length} remaining`;
+        progressDiv.textContent = `Level: ${currentLevel} | ${selectedUnitsText} | Mode: ${getModeName(currentMode)} | Progress: ${totalProgress + 1} / ${totalWords} | Reviewing incorrect words: ${incorrectWords.length} remaining`;
     } else {
         // Show normal progress
-        let progressText = `Level: ${currentLevel} ${currentUnitNumber} | Mode: ${getModeName(currentMode)} | Progress: ${totalProgress + 1} / ${totalWords}`;
+        let progressText = `Level: ${currentLevel} | ${selectedUnitsText} | Mode: ${getModeName(currentMode)} | Progress: ${totalProgress + 1} / ${totalWords}`;
 
         // Add incorrect words count if there are any
         if (incorrectWords.length > 0) {
@@ -591,6 +631,61 @@ function getModeName(modeValue) {
         case 'dictation': return 'Dictation';
         case 'listening': return 'Listening';
         default: return '';
+    }
+}
+
+// Generate unit options HTML for a level dropdown
+function generateUnitOptions(level) {
+    try {
+        // Make sure availableUnits is initialized for this level
+        if (!availableUnits[level]) {
+            console.log(`No available units for level ${level}, initializing empty array`);
+            availableUnits[level] = [];
+            return '<div class="unit-option">Loading units for Level ' + level + '...</div>';
+        }
+
+        const units = availableUnits[level];
+        console.log(`Found ${units.length} units for level ${level}:`, units);
+
+        // If no units are available yet, show a loading message
+        if (units.length === 0) {
+            return '<div class="unit-option">Loading units for Level ' + level + '...</div>';
+        }
+
+        // Make sure selectedUnits is initialized for this level
+        if (!selectedUnits[level]) {
+            // By default, select all units
+            selectedUnits[level] = units.map(unit => unit.index);
+            console.log(`Initialized selectedUnits[${level}] to all units:`, selectedUnits[level]);
+        }
+
+        const selectedUnitIndices = selectedUnits[level];
+        console.log(`Selected units for level ${level}:`, selectedUnitIndices);
+
+        // Add 'All Units' option
+        let html = `
+            <div class="unit-option" data-level="${level}" data-unit="all">
+                <span class="checkbox-indicator">${selectedUnitIndices.length === units.length ? '☑️' : '⬜'}</span>
+                <span>A</span>
+                <span class="unit-tooltip">All Units (${units.reduce((total, unit) => total + unit.wordCount, 0)} words)</span>
+            </div>
+        `;
+
+        // Add individual unit options
+        units.forEach(unit => {
+            html += `
+                <div class="unit-option" data-level="${level}" data-unit="${unit.index}">
+                    <span class="checkbox-indicator">${selectedUnitIndices.includes(unit.index) ? '☑️' : '⬜'}</span>
+                    <span>${unit.index + 1}</span>
+                    <span class="unit-tooltip">${unit.name} (${unit.wordCount} words)</span>
+                </div>
+            `;
+        });
+
+        return html;
+    } catch (error) {
+        console.error(`Error generating unit options for level ${level}:`, error);
+        return '<div class="unit-option">Error loading units</div>';
     }
 }
 
@@ -695,20 +790,50 @@ function initializeApp() {
     reviewDisplayDiv.style.display = 'none';
     promptDisplayDiv.style.display = 'none';
 
-    if (wordsData && wordsData.length > 0 && wordsData[currentUnitIndex] && wordsData[currentUnitIndex].words) {
-        console.log(`Found ${wordsData[currentUnitIndex].words.length} words in unit ${wordsData[currentUnitIndex].unit}`);
-        shuffledWords = [...wordsData[currentUnitIndex].words];
-        if (shuffleEnabled) {
-            shuffleArray(shuffledWords);
-            console.log('Words shuffled during initialization');
+    // Load words from selected units
+    if (wordsData && wordsData.length > 0) {
+        // Get selected units for current level
+        const selectedUnitIndices = selectedUnits[currentLevel] || [];
+
+        // Handle both cases: units selected or no units selected
+        shuffledWords = [];
+
+        if (selectedUnitIndices.length > 0) {
+            // Combine words from all selected units
+            selectedUnitIndices.forEach(unitIndex => {
+                if (wordsData[unitIndex] && wordsData[unitIndex].words) {
+                    const unitWords = wordsData[unitIndex].words.map(word => ({
+                        ...word,
+                        unitIndex // Add unit index to track which unit each word belongs to
+                    }));
+                    shuffledWords = shuffledWords.concat(unitWords);
+                }
+            });
+
+            console.log(`Loaded ${shuffledWords.length} words from ${selectedUnitIndices.length} selected units`);
+
+            if (shuffleEnabled) {
+                shuffleArray(shuffledWords);
+                console.log('Words shuffled during initialization');
+            } else {
+                console.log('Words kept in original order during initialization');
+            }
         } else {
-            console.log('Words kept in original order during initialization');
+            console.log('No units selected for the current level');
+            promptDiv.textContent = 'Please select at least one unit to practice.';
+            progressDiv.textContent = `Level: ${currentLevel} | No units selected | Mode: ${getModeName(currentMode)}`;
         }
 
         // Update UI
         containerDiv.classList.remove('input-visible', 'attempts-visible', 'buttons-visible');
         promptDiv.textContent = 'Please select a mode and click anywhere on the page to activate audio.';
-        progressDiv.textContent = `Level: ${currentLevel} | Mode: ${getModeName(currentMode)}`;
+
+        // Get selected units text for display
+        const selectedUnitsText = selectedUnitIndices.length > 0 ?
+            `Units: ${selectedUnitIndices.map(i => i + 1).join(', ')}` :
+            'No units selected';
+
+        progressDiv.textContent = `Level: ${currentLevel} | ${selectedUnitsText} | Mode: ${getModeName(currentMode)}`;
 
         // Initialize speech and load first word
         document.body.addEventListener('click', () => {
@@ -741,13 +866,48 @@ function rebuildUI() {
         <div class="top-controls">
             <div class="level-buttons">
                 <span>HFLevel:</span>
-                <button class="level-btn ${currentLevel === 'C' ? 'active' : ''}" data-level="C">C</button>
-                <button class="level-btn ${currentLevel === 'D' ? 'active' : ''}" data-level="D">D</button>
-                <button class="level-btn ${currentLevel === 'E' ? 'active' : ''}" data-level="E">E</button>
-                <button class="level-btn ${currentLevel === 'F' ? 'active' : ''}" data-level="F">F</button>
-                <button class="level-btn ${currentLevel === 'G' ? 'active' : ''}" data-level="G">G</button>
-                <button class="level-btn ${currentLevel === 'H' ? 'active' : ''}" data-level="H">H</button>
-                <button class="level-btn ${currentLevel === 'J' ? 'active' : ''}" data-level="J">J</button>
+                <div class="level-dropdown">
+                    <button class="level-dropdown-btn ${currentLevel === 'C' ? 'active' : ''}" data-level="C">C</button>
+                    <div class="level-dropdown-content" id="level-C-dropdown">
+                        ${generateUnitOptions('C')}
+                    </div>
+                </div>
+                <div class="level-dropdown">
+                    <button class="level-dropdown-btn ${currentLevel === 'D' ? 'active' : ''}" data-level="D">D</button>
+                    <div class="level-dropdown-content" id="level-D-dropdown">
+                        ${generateUnitOptions('D')}
+                    </div>
+                </div>
+                <div class="level-dropdown">
+                    <button class="level-dropdown-btn ${currentLevel === 'E' ? 'active' : ''}" data-level="E">E</button>
+                    <div class="level-dropdown-content" id="level-E-dropdown">
+                        ${generateUnitOptions('E')}
+                    </div>
+                </div>
+                <div class="level-dropdown">
+                    <button class="level-dropdown-btn ${currentLevel === 'F' ? 'active' : ''}" data-level="F">F</button>
+                    <div class="level-dropdown-content" id="level-F-dropdown">
+                        ${generateUnitOptions('F')}
+                    </div>
+                </div>
+                <div class="level-dropdown">
+                    <button class="level-dropdown-btn ${currentLevel === 'G' ? 'active' : ''}" data-level="G">G</button>
+                    <div class="level-dropdown-content" id="level-G-dropdown">
+                        ${generateUnitOptions('G')}
+                    </div>
+                </div>
+                <div class="level-dropdown">
+                    <button class="level-dropdown-btn ${currentLevel === 'H' ? 'active' : ''}" data-level="H">H</button>
+                    <div class="level-dropdown-content" id="level-H-dropdown">
+                        ${generateUnitOptions('H')}
+                    </div>
+                </div>
+                <div class="level-dropdown">
+                    <button class="level-dropdown-btn ${currentLevel === 'J' ? 'active' : ''}" data-level="J">J</button>
+                    <div class="level-dropdown-content" id="level-J-dropdown">
+                        ${generateUnitOptions('J')}
+                    </div>
+                </div>
             </div>
 
             <div class="mode-buttons">
@@ -757,7 +917,7 @@ function rebuildUI() {
                 <button class="mode-btn ${currentMode === 'listening' ? 'active' : ''}" data-mode="listening" title="Listen to the word, type what you hear">Listening</button>
             </div>
 
-            <div class="menu" ${currentMode !== 'review' ? 'style="display: none;"' : ''}>
+            <div class="menu">
                 <button id="menu-toggle">⚙️</button>
                 <div id="menu-content" class="menu-content">
                     <label>
@@ -904,21 +1064,265 @@ function rebuildUI() {
         }
     });
 
-    // Add event listeners for level buttons
-    document.querySelectorAll('.level-btn').forEach(button => {
-        button.addEventListener('click', () => {
+    // Add event listeners for level dropdown buttons
+    document.querySelectorAll('.level-dropdown-btn').forEach(button => {
+        button.addEventListener('click', async (event) => {
+            // Prevent default action and stop propagation
+            event.preventDefault();
+            event.stopPropagation();
+
+            // Cancel any ongoing speech to prevent multiple speaking
+            if (synth && synth.speaking) {
+                synth.cancel();
+            }
+
             const newLevel = button.getAttribute('data-level');
+            console.log(`Level button clicked: ${newLevel}`);
+
+            // Get the dropdown for this level
+            const dropdown = document.getElementById(`level-${newLevel}-dropdown`);
+            if (!dropdown) {
+                console.error(`Dropdown not found for level ${newLevel}`);
+                return;
+            }
+
+            // Check if this dropdown is currently visible
+            const isVisible = dropdown.classList.contains('visible');
+
+            // Hide all dropdowns first
+            document.querySelectorAll('.level-dropdown-content').forEach(d => {
+                d.classList.remove('visible');
+            });
+
+            // If this is a new level, load the vocabulary data first
             if (newLevel !== currentLevel) {
                 console.log(`Level changed to: ${newLevel}`);
+
                 // Update active button
-                document.querySelectorAll('.level-btn').forEach(btn => {
+                document.querySelectorAll('.level-dropdown-btn').forEach(btn => {
                     btn.classList.remove('active');
                 });
                 button.classList.add('active');
-                // Load vocabulary data for the new level
-                loadVocabularyData(newLevel);
+
+                try {
+                    // Load vocabulary data for the new level
+                    console.log(`Loading vocabulary data for level ${newLevel}...`);
+                    await loadVocabularyData(newLevel);
+                    console.log(`Vocabulary data loaded for level ${newLevel}`);
+
+                    // Show the dropdown for the selected level
+                    dropdown.classList.add('visible');
+                } catch (error) {
+                    console.error(`Error loading vocabulary data for level ${newLevel}:`, error);
+                }
+            } else {
+                // For the current level, just toggle the dropdown visibility
+                if (!isVisible) {
+                    // Make sure we have data for this level before showing the menu
+                    if (!availableUnits[newLevel] || availableUnits[newLevel].length === 0) {
+                        console.log(`No data available for level ${newLevel}, loading data first...`);
+                        try {
+                            await loadVocabularyData(newLevel);
+                            console.log(`Vocabulary data loaded for level ${newLevel}`);
+                        } catch (error) {
+                            console.error(`Error loading vocabulary data for level ${newLevel}:`, error);
+                            return;
+                        }
+                    }
+
+                    // Show the dropdown
+                    dropdown.classList.add('visible');
+                }
             }
         });
+    });
+
+    // Add event listener to hide dropdowns when clicking outside
+    document.addEventListener('click', (event) => {
+        if (!event.target.closest('.level-dropdown')) {
+            document.querySelectorAll('.level-dropdown-content').forEach(dropdown => {
+                dropdown.classList.remove('visible');
+            });
+        }
+    });
+
+    // Add event listeners for unit options
+    document.addEventListener('click', (event) => {
+        // Cancel any ongoing speech to prevent multiple speaking
+        if (synth && synth.speaking) {
+            synth.cancel();
+        }
+
+        // Check if this is a unit option click
+        const unitOption = event.target.closest('.unit-option');
+        if (unitOption && !unitOption.hasAttribute('data-processing')) {
+            // Mark this element as being processed to prevent double processing
+            unitOption.setAttribute('data-processing', 'true');
+
+            // Use setTimeout to clear the processing flag after the event has been fully processed
+            setTimeout(() => {
+                unitOption.removeAttribute('data-processing');
+            }, 100);
+
+            // Prevent default action and stop propagation immediately
+            event.preventDefault();
+            event.stopPropagation();
+
+            const level = unitOption.getAttribute('data-level');
+            const unit = unitOption.getAttribute('data-unit');
+
+            console.log(`Unit option clicked: Level ${level}, Unit ${unit}`);
+            console.log(`Available units for level ${level}:`, availableUnits[level]);
+            console.log(`Selected units for level ${level}:`, selectedUnits[level]);
+            const checkboxIndicator = unitOption.querySelector('.checkbox-indicator');
+            if (!checkboxIndicator) {
+                console.error(`No checkbox indicator found for level ${level}, unit ${unit}`);
+            }
+
+            // Make sure availableUnits and selectedUnits are initialized for this level
+            if (!availableUnits[level]) {
+                availableUnits[level] = [];
+            }
+            if (!selectedUnits[level]) {
+                selectedUnits[level] = [];
+            }
+
+            // Determine if this option is currently selected
+            let isSelected = false;
+            if (unit === 'all') {
+                isSelected = selectedUnits[level].length === availableUnits[level].length && availableUnits[level].length > 0;
+            } else {
+                const unitIndex = parseInt(unit);
+                isSelected = selectedUnits[level].includes(unitIndex);
+            }
+
+            // Toggle selection state
+            isSelected = !isSelected;
+            console.log(`Toggling selection for level ${level}, unit ${unit} to ${isSelected}`);
+
+            // Update selected units
+            if (!selectedUnits[level]) {
+                selectedUnits[level] = [];
+                console.log(`Initialized selectedUnits[${level}] to empty array`);
+            }
+
+            if (unit === 'all') {
+                // Handle 'All Units' option
+                if (isSelected && availableUnits[level].length > 0) {
+                    // Select all units
+                    selectedUnits[level] = availableUnits[level].map(u => u.index);
+                    // Update all checkbox indicators
+                    document.querySelectorAll(`.unit-option[data-level="${level}"]`).forEach(option => {
+                        const indicator = option.querySelector('.checkbox-indicator');
+                        if (indicator) {
+                            indicator.textContent = '☑️';
+                        }
+                    });
+                } else {
+                    // Deselect all units
+                    selectedUnits[level] = [];
+                    console.log(`Deselected all units for level ${level}`);
+
+                    // Update all checkbox indicators
+                    document.querySelectorAll(`.unit-option[data-level="${level}"]`).forEach(option => {
+                        const unitAttr = option.getAttribute('data-unit');
+                        const indicator = option.querySelector('.checkbox-indicator');
+                        if (indicator) {
+                            // Uncheck all units including the 'all' option
+                            indicator.textContent = '⬜';
+                            console.log(`Setting checkbox for unit ${unitAttr} to unchecked`);
+                        }
+                    });
+                }
+            } else {
+                // Handle individual unit option
+                try {
+                    const unitIndex = parseInt(unit);
+                    console.log(`Processing unit ${unit}, parsed as index ${unitIndex}`);
+
+                    if (isNaN(unitIndex)) {
+                        console.error(`Failed to parse unit as integer: ${unit}`);
+                        return;
+                    }
+
+                    if (isSelected) {
+                        // Add unit to selected units if not already included
+                        if (!selectedUnits[level].includes(unitIndex)) {
+                            selectedUnits[level].push(unitIndex);
+                            console.log(`Added unit ${unitIndex} to selectedUnits[${level}]:`, selectedUnits[level]);
+                        }
+                        // Always update the checkbox indicator
+                        if (checkboxIndicator) {
+                            checkboxIndicator.textContent = '☑️';
+                        }
+                    } else {
+                        // Allow deselecting any unit, even if it's the last one
+                        // Remove unit from selected units
+                        selectedUnits[level] = selectedUnits[level].filter(u => u !== unitIndex);
+                        console.log(`Removed unit ${unitIndex} from selectedUnits[${level}]:`, selectedUnits[level]);
+                        // Always update the checkbox indicator
+                        if (checkboxIndicator) {
+                            checkboxIndicator.textContent = '⬜';
+                        }
+                    }
+                } catch (error) {
+                    console.error(`Error processing unit ${unit} for level ${level}:`, error);
+                }
+
+                // Update 'All Units' checkbox indicator
+                const allUnitsOption = document.querySelector(`.unit-option[data-level="${level}"][data-unit="all"]`);
+                if (allUnitsOption) {
+                    const allCheckboxIndicator = allUnitsOption.querySelector('.checkbox-indicator');
+                    if (allCheckboxIndicator) {
+                        // Check if all available units are selected
+                        const allSelected = availableUnits[level].length > 0 &&
+                                          selectedUnits[level].length === availableUnits[level].length &&
+                                          availableUnits[level].every(unit => selectedUnits[level].includes(unit.index));
+
+                        if (allSelected) {
+                            allCheckboxIndicator.textContent = '☑️';
+                        } else {
+                            allCheckboxIndicator.textContent = '⬜';
+                        }
+                    }
+                }
+            }
+
+            // Hide the dropdown immediately
+            const dropdown = document.getElementById(`level-${level}-dropdown`);
+            if (dropdown) {
+                dropdown.classList.remove('visible');
+            }
+
+            // Reload words with selected units only if this is the current level
+            if (level === currentLevel) {
+                /*
+                // If no units are selected, select the first unit to prevent errors
+                if (selectedUnits[level].length === 0) {
+                    // Select at least the first unit if available
+                    if (availableUnits[level] && availableUnits[level].length > 0) {
+                        selectedUnits[level] = [availableUnits[level][0].index];
+                        console.log(`Auto-selected first unit for level ${level} to prevent empty selection`);
+
+                        // Update the checkbox for the first unit
+                        const firstUnitOption = document.querySelector(`.unit-option[data-level="${level}"][data-unit="${availableUnits[level][0].index}"]`);
+                        if (firstUnitOption) {
+                            const indicator = firstUnitOption.querySelector('.checkbox-indicator');
+                            if (indicator) {
+                                indicator.textContent = '☑️';
+                            }
+                        }
+                    }
+                }
+                */
+
+                // Use setTimeout with a longer delay to ensure UI updates are complete
+                setTimeout(() => {
+                    console.log(`Initializing app after unit selection change for level ${level}`);
+                    initializeApp();
+                }, 100);
+            }
+        }
     });
 
     // Add event listeners for mode buttons
@@ -937,28 +1341,6 @@ function rebuildUI() {
                 currentMode = newMode;
                 currentWordIndex = 0;
                 totalProgress = 0; // Reset progress when changing modes
-
-                // Update scramble toggle state based on mode
-                const scrambleToggle = document.getElementById('scramble-words-checkbox');
-                if (scrambleToggle) {
-                    scrambleToggle.disabled = currentMode !== 'review';
-                    // If not in review mode, disable scramble words
-                    if (currentMode !== 'review' && scrambleWordsEnabled) {
-                        scrambleWordsEnabled = false;
-                        scrambleToggle.checked = false;
-                    }
-                }
-
-                // Show/hide menu based on mode
-                const menuDiv = document.querySelector('.menu');
-                if (menuDiv) {
-                    menuDiv.style.display = currentMode === 'review' ? '' : 'none';
-                    // Also hide the menu content if it's visible
-                    const menuContent = document.getElementById('menu-content');
-                    if (menuContent && menuContent.classList.contains('visible')) {
-                        menuContent.classList.remove('visible');
-                    }
-                }
 
                 // Make sure we have shuffled words
                 if (!shuffledWords || shuffledWords.length === 0) {
@@ -1004,9 +1386,6 @@ function rebuildUI() {
             shuffleEnabled = event.target.checked;
             console.log(`Shuffle ${shuffleEnabled ? 'enabled' : 'disabled'}`);
 
-            // Hide the menu after selection
-            menuContent.classList.remove('visible');
-
             // If we have words loaded, reshuffle or sort them based on the new setting
             if (shuffledWords && shuffledWords.length > 0) {
                 if (shuffleEnabled) {
@@ -1050,32 +1429,12 @@ function rebuildUI() {
     // Add scramble toggle event listener
     const scrambleToggle = document.getElementById('scramble-words-checkbox');
     if (scrambleToggle) {
-        // Only enable the scramble toggle in review mode
-        scrambleToggle.disabled = currentMode !== 'review';
         scrambleToggle.checked = scrambleWordsEnabled;
-
-        // Add a note that it's only available in review mode
-        const scrambleLabel = scrambleToggle.parentElement;
-        const noteSpan = document.createElement('span');
-        noteSpan.className = 'mode-note';
-        noteSpan.textContent = ' (Review mode only)';
-        noteSpan.style.fontSize = '0.8em';
-        noteSpan.style.color = '#666';
-        noteSpan.style.fontStyle = 'italic';
-
-        // Check if the note is already added
-        if (!scrambleLabel.querySelector('.mode-note')) {
-            scrambleLabel.appendChild(noteSpan);
-        }
-
         scrambleToggle.addEventListener('change', (event) => {
             scrambleWordsEnabled = event.target.checked;
             console.log(`Scramble ${scrambleWordsEnabled ? 'enabled' : 'disabled'}`);
 
-            // Hide the menu after selection
-            menuContent.classList.remove('visible');
-
-            // Reload words if scramble is enabled and in review mode
+            // Reload words if scramble is enabled
             if (scrambleWordsEnabled && currentMode === 'review') {
                 scrambleCurrentWords();
                 loadWord();
