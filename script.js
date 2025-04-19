@@ -187,8 +187,8 @@ function speakWord(text) {
     };
     currentUtterance.onerror = (event) => {
         console.error('Speech synthesis error:', event);
-        feedbackDiv.textContent = '语音合成暂时不可用，请稍后再试';
-        feedbackDiv.className = 'incorrect';
+        //feedbackDiv.textContent = '语音合成暂时不可用，请稍后再试';
+        //feedbackDiv.className = 'incorrect';
         currentUtterance = null;
         isSpeaking = false;
     };
@@ -900,6 +900,12 @@ function rebuildUI() {
                     <button class="level-dropdown-btn ${currentLevel === 'H' ? 'active' : ''}" data-level="H">H</button>
                     <div class="level-dropdown-content" id="level-H-dropdown">
                         ${generateUnitOptions('H')}
+                    </div>
+                </div>
+                <div class="level-dropdown">
+                    <button class="level-dropdown-btn ${currentLevel === 'I' ? 'active' : ''}" data-level="I">I</button>
+                    <div class="level-dropdown-content" id="level-I-dropdown">
+                        ${generateUnitOptions('I')}
                     </div>
                 </div>
                 <div class="level-dropdown">
