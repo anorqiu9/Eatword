@@ -76,7 +76,13 @@ export class UIManager {
             shuffleToggle: document.getElementById('shuffle-toggle'),
             scrambleToggle: document.getElementById('scramble-words-checkbox'),
             menuToggle: document.getElementById('menu-toggle'),
-            menuContent: document.getElementById('menu-content')
+            menuContent: document.getElementById('menu-content'),
+            englishVoiceSelect: document.getElementById('english-voice-select'),
+            chineseVoiceSelect: document.getElementById('chinese-voice-select'),
+            englishRateSlider: document.getElementById('english-rate-slider'),
+            chineseRateSlider: document.getElementById('chinese-rate-slider'),
+            englishRateValue: document.getElementById('english-rate-value'),
+            chineseRateValue: document.getElementById('chinese-rate-value')
         };
 
         // Log the elements to help with debugging
@@ -247,6 +253,9 @@ export class UIManager {
                 this.elements.menuContent.classList.toggle('visible');
             });
         }
+
+        // Voice settings
+        this.setupVoiceSettings();
 
         // Level dropdown buttons
         document.querySelectorAll('.level-dropdown-btn').forEach(button => {
@@ -489,6 +498,37 @@ export class UIManager {
                             <input type="checkbox" id="scramble-words-checkbox" ${scrambleEnabled ? 'checked' : ''} ${currentMode !== 'review' ? 'disabled' : ''}>
                             <span>Scramble Words ${currentMode !== 'review' ? '(Review mode only)' : ''}</span>
                         </label>
+                        <div class="settings-section">
+                            <h3>Voice Settings</h3>
+
+                            <div class="voice-settings-group">
+                                <h4>English</h4>
+                                <div class="voice-selection">
+                                    <label for="english-voice-select">Voice:</label>
+                                    <select id="english-voice-select">
+                                        <option value="">Loading voices...</option>
+                                    </select>
+                                </div>
+                                <div class="voice-rate">
+                                    <label for="english-rate-slider">Rate: <span id="english-rate-value">0.7</span></label>
+                                    <input type="range" id="english-rate-slider" min="0.5" max="1.5" step="0.1" value="0.7">
+                                </div>
+                            </div>
+
+                            <div class="voice-settings-group">
+                                <h4>Chinese</h4>
+                                <div class="voice-selection">
+                                    <label for="chinese-voice-select">Voice:</label>
+                                    <select id="chinese-voice-select">
+                                        <option value="">Loading voices...</option>
+                                    </select>
+                                </div>
+                                <div class="voice-rate">
+                                    <label for="chinese-rate-slider">Rate: <span id="chinese-rate-value">1.0</span></label>
+                                    <input type="range" id="chinese-rate-slider" min="0.5" max="1.5" step="0.1" value="1.0">
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -702,13 +742,103 @@ export class UIManager {
                 break;
         }
 
-        // Speak the word only in listening mode
-        //if (mode === 'listening') {
-            this.app.speechManager.speak(word.word);
-        //}
+        // Speak the word in all modes
+        this.app.speechManager.speak(word.word);
 
         // Update progress display
         this.updateProgressDisplay();
+    }
+
+    /**
+     * Setup voice settings event listeners
+     */
+    setupVoiceSettings() {
+        // Populate the voice dropdowns
+        this.populateVoiceDropdown();
+
+        // English voice selection
+        if (this.elements.englishVoiceSelect) {
+            this.elements.englishVoiceSelect.addEventListener('change', () => {
+                const selectedVoiceName = this.elements.englishVoiceSelect.value;
+                if (selectedVoiceName) {
+                    if (typeof this.app.speechManager.setEnglishVoice === 'function' && this.app.speechManager.setEnglishVoice(selectedVoiceName)) {
+                        // Speak a sample to demonstrate the voice
+                        this.app.speechManager.speak('English voice selected');
+                    } else {
+                        // Fallback: set the voice directly
+                        const voice = this.app.speechManager.voices.find(v => v.name === selectedVoiceName);
+                        if (voice) {
+                            this.app.speechManager.englishVoice = voice;
+                            localStorage.setItem('selectedEnglishVoice', selectedVoiceName);
+                            this.app.speechManager.speak('English voice selected');
+                        }
+                    }
+                }
+            });
+        }
+
+        // Chinese voice selection
+        if (this.elements.chineseVoiceSelect) {
+            this.elements.chineseVoiceSelect.addEventListener('change', () => {
+                const selectedVoiceName = this.elements.chineseVoiceSelect.value;
+                if (selectedVoiceName) {
+                    if (typeof this.app.speechManager.setChineseVoice === 'function' && this.app.speechManager.setChineseVoice(selectedVoiceName)) {
+                        // Speak a sample to demonstrate the voice
+                        this.app.speechManager.speak('中文语音已选择'); // Chinese voice selected
+                    } else {
+                        // Fallback: set the voice directly
+                        const voice = this.app.speechManager.voices.find(v => v.name === selectedVoiceName);
+                        if (voice) {
+                            this.app.speechManager.chineseVoice = voice;
+                            localStorage.setItem('selectedChineseVoice', selectedVoiceName);
+                            this.app.speechManager.speak('中文语音已选择'); // Chinese voice selected
+                        }
+                    }
+                }
+            });
+        }
+
+        // English rate slider
+        if (this.elements.englishRateSlider && this.elements.englishRateValue) {
+            this.elements.englishRateSlider.addEventListener('input', () => {
+                const rate = parseFloat(this.elements.englishRateSlider.value);
+                this.elements.englishRateValue.textContent = rate.toFixed(1);
+            });
+
+            this.elements.englishRateSlider.addEventListener('change', () => {
+                const rate = parseFloat(this.elements.englishRateSlider.value);
+                if (typeof this.app.speechManager.setEnglishRate === 'function' && this.app.speechManager.setEnglishRate(rate)) {
+                    // Speak a sample to demonstrate the rate
+                    this.app.speechManager.speak('English rate adjusted');
+                } else {
+                    // Fallback: set the rate directly
+                    this.app.speechManager.englishRate = rate;
+                    localStorage.setItem('englishRate', rate.toString());
+                    this.app.speechManager.speak('English rate adjusted');
+                }
+            });
+        }
+
+        // Chinese rate slider
+        if (this.elements.chineseRateSlider && this.elements.chineseRateValue) {
+            this.elements.chineseRateSlider.addEventListener('input', () => {
+                const rate = parseFloat(this.elements.chineseRateSlider.value);
+                this.elements.chineseRateValue.textContent = rate.toFixed(1);
+            });
+
+            this.elements.chineseRateSlider.addEventListener('change', () => {
+                const rate = parseFloat(this.elements.chineseRateSlider.value);
+                if (typeof this.app.speechManager.setChineseRate === 'function' && this.app.speechManager.setChineseRate(rate)) {
+                    // Speak a sample to demonstrate the rate
+                    this.app.speechManager.speak('中文语速已调整'); // Chinese rate adjusted
+                } else {
+                    // Fallback: set the rate directly
+                    this.app.speechManager.chineseRate = rate;
+                    localStorage.setItem('chineseRate', rate.toString());
+                    this.app.speechManager.speak('中文语速已调整'); // Chinese rate adjusted
+                }
+            });
+        }
     }
 
     /**
@@ -727,6 +857,140 @@ export class UIManager {
         }
 
         this.elements.attemptCounter.textContent = attemptsText;
+    }
+
+    /**
+     * Populate the voice selection dropdowns with available voices
+     */
+    populateVoiceDropdown() {
+        if (!this.elements.englishVoiceSelect || !this.elements.chineseVoiceSelect) return;
+
+        try {
+            // Check if the speech manager has the required methods
+            if (!this.app.speechManager.voices) {
+                console.warn('Speech manager not fully initialized yet, trying again in 1 second');
+                setTimeout(() => this.populateVoiceDropdown(), 1000);
+                return;
+            }
+
+            // Populate English voices
+            let englishVoices = [];
+            let currentEnglishVoice = null;
+
+            // Check if the methods exist
+            if (typeof this.app.speechManager.getEnglishVoices === 'function') {
+                englishVoices = this.app.speechManager.getEnglishVoices();
+            } else {
+                // Fallback: filter voices manually
+                englishVoices = this.app.speechManager.voices.filter(v => v.lang.startsWith('en'));
+            }
+
+            if (typeof this.app.speechManager.getSelectedEnglishVoice === 'function') {
+                currentEnglishVoice = this.app.speechManager.getSelectedEnglishVoice();
+            } else {
+                currentEnglishVoice = this.app.speechManager.englishVoice;
+            }
+
+            if (englishVoices.length === 0) {
+                // If no voices are available yet, try again after a short delay
+                console.warn('No English voices found, trying again in 1 second');
+                setTimeout(() => this.populateVoiceDropdown(), 1000);
+                return;
+            }
+
+            // Clear existing options
+            this.elements.englishVoiceSelect.innerHTML = '';
+
+            // Add options for each English voice
+            englishVoices.forEach(voice => {
+                const option = document.createElement('option');
+                option.value = voice.name;
+                option.textContent = `${voice.name} (${voice.lang})`;
+
+                // Select the current voice
+                if (currentEnglishVoice && voice.name === currentEnglishVoice.name) {
+                    option.selected = true;
+                }
+
+                this.elements.englishVoiceSelect.appendChild(option);
+            });
+
+            console.log(`Populated dropdown with ${englishVoices.length} English voices`);
+
+            // Populate Chinese voices
+            let chineseVoices = [];
+            let currentChineseVoice = null;
+
+            // Check if the methods exist
+            if (typeof this.app.speechManager.getChineseVoices === 'function') {
+                chineseVoices = this.app.speechManager.getChineseVoices();
+            } else {
+                // Fallback: filter voices manually
+                chineseVoices = this.app.speechManager.voices.filter(v => v.lang.startsWith('zh') || v.lang.startsWith('cmn'));
+            }
+
+            if (typeof this.app.speechManager.getSelectedChineseVoice === 'function') {
+                currentChineseVoice = this.app.speechManager.getSelectedChineseVoice();
+            } else {
+                currentChineseVoice = this.app.speechManager.chineseVoice;
+            }
+
+            // Clear existing options
+            this.elements.chineseVoiceSelect.innerHTML = '';
+
+            if (chineseVoices.length === 0) {
+                const option = document.createElement('option');
+                option.value = '';
+                option.textContent = 'No Chinese voices available';
+                this.elements.chineseVoiceSelect.appendChild(option);
+            } else {
+                // Add options for each Chinese voice
+                chineseVoices.forEach(voice => {
+                    const option = document.createElement('option');
+                    option.value = voice.name;
+                    option.textContent = `${voice.name} (${voice.lang})`;
+
+                    // Select the current voice
+                    if (currentChineseVoice && voice.name === currentChineseVoice.name) {
+                        option.selected = true;
+                    }
+
+                    this.elements.chineseVoiceSelect.appendChild(option);
+                });
+                console.log(`Populated dropdown with ${chineseVoices.length} Chinese voices`);
+            }
+
+            // Set rate slider values
+            if (this.elements.englishRateSlider && this.elements.englishRateValue) {
+                let englishRate = 0.7; // Default value
+
+                if (typeof this.app.speechManager.getEnglishRate === 'function') {
+                    englishRate = this.app.speechManager.getEnglishRate();
+                } else if (this.app.speechManager.englishRate) {
+                    englishRate = this.app.speechManager.englishRate;
+                }
+
+                this.elements.englishRateSlider.value = englishRate;
+                this.elements.englishRateValue.textContent = englishRate.toFixed(1);
+            }
+
+            if (this.elements.chineseRateSlider && this.elements.chineseRateValue) {
+                let chineseRate = 1.0; // Default value
+
+                if (typeof this.app.speechManager.getChineseRate === 'function') {
+                    chineseRate = this.app.speechManager.getChineseRate();
+                } else if (this.app.speechManager.chineseRate) {
+                    chineseRate = this.app.speechManager.chineseRate;
+                }
+
+                this.elements.chineseRateSlider.value = chineseRate;
+                this.elements.chineseRateValue.textContent = chineseRate.toFixed(1);
+            }
+        } catch (error) {
+            console.error('Error populating voice dropdowns:', error);
+            // Try again after a delay
+            setTimeout(() => this.populateVoiceDropdown(), 2000);
+        }
     }
 
     /**

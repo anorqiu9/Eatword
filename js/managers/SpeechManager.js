@@ -5,11 +5,19 @@ export class SpeechManager {
     constructor() {
         this.synth = window.speechSynthesis;
         this.voices = [];
+        this.englishVoices = [];
+        this.chineseVoices = [];
         this.englishVoice = null;
         this.chineseVoice = null;
         this.currentUtterance = null;
         this.isSpeaking = false;
         this.isInitialized = false;
+
+        // Load saved settings from localStorage
+        this.selectedEnglishVoiceName = localStorage.getItem('selectedEnglishVoice') || null;
+        this.selectedChineseVoiceName = localStorage.getItem('selectedChineseVoice') || null;
+        this.englishRate = parseFloat(localStorage.getItem('englishRate') || '0.7');
+        this.chineseRate = parseFloat(localStorage.getItem('chineseRate') || '1.0');
 
         // Load voices when available
         this.synth.onvoiceschanged = this.loadVoices.bind(this);
@@ -23,13 +31,48 @@ export class SpeechManager {
         this.voices = this.synth.getVoices();
         console.log(`Loaded ${this.voices.length} voices`);
 
-        // Cache the English and Chinese voices for future use
+        // Filter and cache English and Chinese voices
         if (this.voices.length > 0) {
-            this.englishVoice = this.voices.find(v => v.lang.startsWith('en'));
-            this.chineseVoice = this.voices.find(v => v.lang.startsWith('zh'));
+            // Get all English voices
+            this.englishVoices = this.voices.filter(v => v.lang.startsWith('en'));
+            console.log(`Found ${this.englishVoices.length} English voices`);
 
-            console.log(`Found English voice: ${this.englishVoice ? this.englishVoice.name : 'None'}`);
-            console.log(`Found Chinese voice: ${this.chineseVoice ? this.chineseVoice.name : 'None'}`);
+            // Get all Chinese voices
+            this.chineseVoices = this.voices.filter(v => v.lang.startsWith('zh') || v.lang.startsWith('cmn'));
+            console.log(`Found ${this.chineseVoices.length} Chinese voices`);
+
+            // Try to find the previously selected English voice
+            if (this.selectedEnglishVoiceName) {
+                const savedEnglishVoice = this.englishVoices.find(v => v.name === this.selectedEnglishVoiceName);
+                if (savedEnglishVoice) {
+                    this.englishVoice = savedEnglishVoice;
+                    console.log(`Using saved English voice: ${savedEnglishVoice.name}`);
+                }
+            }
+
+            // If no saved English voice or saved voice not found, use the first English voice
+            if (!this.englishVoice && this.englishVoices.length > 0) {
+                this.englishVoice = this.englishVoices[0];
+                console.log(`Using default English voice: ${this.englishVoice.name}`);
+            }
+
+            // Try to find the previously selected Chinese voice
+            if (this.selectedChineseVoiceName) {
+                const savedChineseVoice = this.chineseVoices.find(v => v.name === this.selectedChineseVoiceName);
+                if (savedChineseVoice) {
+                    this.chineseVoice = savedChineseVoice;
+                    console.log(`Using saved Chinese voice: ${savedChineseVoice.name}`);
+                }
+            }
+
+            // If no saved Chinese voice or saved voice not found, use the first Chinese voice
+            if (!this.chineseVoice && this.chineseVoices.length > 0) {
+                this.chineseVoice = this.chineseVoices[0];
+                console.log(`Using default Chinese voice: ${this.chineseVoice.name}`);
+            }
+
+            console.log(`Selected English voice: ${this.englishVoice ? this.englishVoice.name : 'None'}`);
+            console.log(`Selected Chinese voice: ${this.chineseVoice ? this.chineseVoice.name : 'None'}`);
         }
     }
 
@@ -111,7 +154,7 @@ export class SpeechManager {
         // Cancel any ongoing speech
         this.cancel();
 
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             // Check if voices are loaded, if not, try to load them
             if (!this.voices || this.voices.length === 0) {
                 console.log('No voices available, trying to reload voices');
@@ -186,15 +229,17 @@ export class SpeechManager {
                     // Adjust speech parameters for better quality
                     this.currentUtterance.pitch = 1.0;
 
-                    // Set slower rate for English words, normal rate for Chinese
+                    // Set rate based on language
                     if (!/[\u4e00-\u9fa5]/.test(text)) {
-                        // English word - speak more slowly
-                        this.currentUtterance.rate = 0.7; // Slower rate for English
-                        console.log('Speaking English word slowly with rate: 0.7');
+                        // English word - use English rate setting
+                        const englishRate = this.englishRate || 0.7; // Default to 0.7 if not set
+                        this.currentUtterance.rate = englishRate;
+                        console.log(`Speaking English word with rate: ${englishRate}`);
                     } else {
-                        // Chinese text - normal rate
-                        this.currentUtterance.rate = 1;
-                        console.log('Speaking Chinese text with normal rate: 1');
+                        // Chinese text - use Chinese rate setting
+                        const chineseRate = this.chineseRate || 1.0; // Default to 1.0 if not set
+                        this.currentUtterance.rate = chineseRate;
+                        console.log(`Speaking Chinese text with rate: ${chineseRate}`);
                     }
                 }
 
@@ -237,5 +282,135 @@ export class SpeechManager {
      */
     isSpeechSynthesisSpeaking() {
         return this.isSpeaking || (this.synth && this.synth.speaking);
+    }
+
+    /**
+     * Get all available English voices
+     * @returns {Array} - Array of English voices
+     */
+    getEnglishVoices() {
+        // If voices aren't loaded yet, try to load them
+        if (this.englishVoices.length === 0 && this.voices.length > 0) {
+            this.englishVoices = this.voices.filter(v => v.lang.startsWith('en'));
+        }
+        return this.englishVoices;
+    }
+
+    /**
+     * Get all available Chinese voices
+     * @returns {Array} - Array of Chinese voices
+     */
+    getChineseVoices() {
+        // If voices aren't loaded yet, try to load them
+        if (this.chineseVoices.length === 0 && this.voices.length > 0) {
+            this.chineseVoices = this.voices.filter(v => v.lang.startsWith('zh') || v.lang.startsWith('cmn'));
+        }
+        return this.chineseVoices;
+    }
+
+    /**
+     * Get the currently selected English voice
+     * @returns {SpeechSynthesisVoice|null} - The selected English voice or null if none is selected
+     */
+    getSelectedEnglishVoice() {
+        return this.englishVoice;
+    }
+
+    /**
+     * Get the currently selected Chinese voice
+     * @returns {SpeechSynthesisVoice|null} - The selected Chinese voice or null if none is selected
+     */
+    getSelectedChineseVoice() {
+        return this.chineseVoice;
+    }
+
+    /**
+     * Get the current English speech rate
+     * @returns {number} - The current English speech rate
+     */
+    getEnglishRate() {
+        return this.englishRate;
+    }
+
+    /**
+     * Get the current Chinese speech rate
+     * @returns {number} - The current Chinese speech rate
+     */
+    getChineseRate() {
+        return this.chineseRate;
+    }
+
+    /**
+     * Set the English voice to use
+     * @param {string} voiceName - The name of the voice to use
+     * @returns {boolean} - Whether the voice was successfully set
+     */
+    setEnglishVoice(voiceName) {
+        // Find the voice by name
+        const voice = this.englishVoices.find(v => v.name === voiceName);
+        if (voice) {
+            this.englishVoice = voice;
+            this.selectedEnglishVoiceName = voiceName;
+            // Save the selection to localStorage for persistence
+            localStorage.setItem('selectedEnglishVoice', voiceName);
+            console.log(`English voice set to: ${voiceName}`);
+            return true;
+        }
+        console.warn(`English voice not found: ${voiceName}`);
+        return false;
+    }
+
+    /**
+     * Set the Chinese voice to use
+     * @param {string} voiceName - The name of the voice to use
+     * @returns {boolean} - Whether the voice was successfully set
+     */
+    setChineseVoice(voiceName) {
+        // Find the voice by name
+        const voice = this.chineseVoices.find(v => v.name === voiceName);
+        if (voice) {
+            this.chineseVoice = voice;
+            this.selectedChineseVoiceName = voiceName;
+            // Save the selection to localStorage for persistence
+            localStorage.setItem('selectedChineseVoice', voiceName);
+            console.log(`Chinese voice set to: ${voiceName}`);
+            return true;
+        }
+        console.warn(`Chinese voice not found: ${voiceName}`);
+        return false;
+    }
+
+    /**
+     * Set the English speech rate
+     * @param {number} rate - The rate to set (0.5 to 1.5)
+     * @returns {boolean} - Whether the rate was successfully set
+     */
+    setEnglishRate(rate) {
+        if (rate >= 0.5 && rate <= 1.5) {
+            this.englishRate = rate;
+            // Save the selection to localStorage for persistence
+            localStorage.setItem('englishRate', rate.toString());
+            console.log(`English rate set to: ${rate}`);
+            return true;
+        }
+        console.warn(`Invalid English rate: ${rate}. Must be between 0.5 and 1.5`);
+        return false;
+    }
+
+    /**
+     * Set the Chinese speech rate
+     * @param {number} rate - The rate to set (0.5 to 1.5)
+     * @returns {boolean} - Whether the rate was successfully set
+     */
+    setChineseRate(rate) {
+        if (rate >= 0.5 && rate <= 1.5) {
+            this.chineseRate = rate;
+            // Save the selection to localStorage for persistence
+            localStorage.setItem('chineseRate', rate.toString());
+            console.log(`Chinese rate set to: ${rate}`);
+            return true;
+        }
+        console.warn(`Invalid Chinese rate: ${rate}. Must be between 0.5 and 1.5`);
+        return false;
     }
 }
