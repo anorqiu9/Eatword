@@ -15,6 +15,16 @@ export class UIManager {
     }
 
     /**
+     * Sanitize a word to create a valid filename
+     * @param {string} word - The word to sanitize
+     * @returns {string} - A sanitized filename
+     */
+    sanitizeFilename(word) {
+        // Replace any character that's not a-z, A-Z, 0-9, underscore, dot, or hyphen with underscore
+        return word.replace(/[^a-zA-Z0-9_.-]/g, '_').toLowerCase();
+    }
+
+    /**
      * Generate the initial UI structure
      */
     generateInitialUI() {
@@ -69,6 +79,11 @@ export class UIManager {
             wordSyllables: document.getElementById('word-syllables'),
             wordPronunciation: document.getElementById('word-pronunciation'),
             wordMeaningReview: document.getElementById('word-meaning-review'),
+            wordImageContainer: document.getElementById('word-image-container'),
+            wordImage: document.getElementById('word-image'),
+            imagePopup: document.getElementById('image-popup'),
+            popupImage: document.getElementById('popup-image'),
+            imagePopupClose: document.getElementById('image-popup-close'),
             promptDisplay: document.getElementById('prompt-display'),
             attemptCounter: document.getElementById('attempt-counter'),
             modeButtons: document.querySelectorAll('.mode-btn'),
@@ -164,7 +179,12 @@ export class UIManager {
 
         // Review display (clickable to speak the word)
         if (this.elements.reviewDisplay) {
-            this.elements.reviewDisplay.addEventListener('click', () => {
+            this.elements.reviewDisplay.addEventListener('click', (event) => {
+                // Don't trigger speak if clicking on the image
+                if (event.target === this.elements.wordImage) {
+                    return;
+                }
+
                 const currentWord = this.app.wordManager.getCurrentWord();
                 if (currentWord) {
                     this.app.speechManager.speak(currentWord.word);
@@ -172,6 +192,44 @@ export class UIManager {
             });
         } else {
             console.warn('Review display element not found');
+        }
+
+        // Word image (double-click to show popup)
+        if (this.elements.wordImage) {
+            this.elements.wordImage.addEventListener('dblclick', () => {
+                if (this.elements.wordImage.src && this.elements.wordImage.style.display !== 'none') {
+                    this.elements.popupImage.src = this.elements.wordImage.src;
+                    this.elements.imagePopup.classList.add('active');
+                }
+            });
+        } else {
+            console.warn('Word image element not found');
+        }
+
+        // Add event listener to speak the word when the image is clicked
+        if (this.elements.wordImage) {
+            this.elements.wordImage.addEventListener('click', () => {
+                const currentWord = this.app.wordManager.getCurrentWord();
+                if (currentWord) {
+                    this.app.speechManager.speak(currentWord.word);
+                }
+            });
+        }
+
+        // Image popup close button
+        if (this.elements.imagePopupClose) {
+            this.elements.imagePopupClose.addEventListener('click', () => {
+                this.elements.imagePopup.classList.remove('active');
+            });
+        } else {
+            console.warn('Image popup close button not found');
+        }
+
+        // Refine the event listener to close the popup when clicking anywhere within the popup
+        if (this.elements.imagePopup) {
+            this.elements.imagePopup.addEventListener('click', () => {
+                this.elements.imagePopup.classList.remove('active');
+            });
         }
 
         // Prompt display (clickable to speak the word in dictation mode)
@@ -536,13 +594,25 @@ export class UIManager {
             <div class="divider"></div>
 
             <div id="review-display" class="display-area">
-                <div id="word-text" class="word-text"></div>
-                <div id="word-syllables" class="word-syllables"></div>
-                <div id="word-pronunciation" class="word-pronunciation"></div>
-                <div id="word-meaning-review" class="word-meaning" style="display: none;"></div>
+                <div class="word-content">
+                    <div id="word-text" class="word-text"></div>
+                    <div id="word-syllables" class="word-syllables"></div>
+                    <div id="word-pronunciation" class="word-pronunciation"></div>
+                    <div id="word-meaning-review" class="word-meaning" style="display: none;"></div>
+                </div>
+                <div id="word-image-container" class="word-image-container">
+                    <img id="word-image" class="word-image" src="" alt="" style="display: none;">
+                </div>
             </div>
 
             <div id="prompt-display" class="display-area"></div>
+
+            <div id="image-popup" class="image-popup">
+                <div class="image-popup-content">
+                    <button id="image-popup-close" class="image-popup-close">×</button>
+                    <img id="popup-image" src="" alt="">
+                </div>
+            </div>
 
             <div id="prompt" class="prompt-text">Please select a mode to start.</div>
 
@@ -658,6 +728,41 @@ export class UIManager {
     }
 
     /**
+     * Load and display the image for a word
+     * @param {Word} word - The word to load the image for
+     */
+    loadWordImage(word) {
+        if (!word || !this.elements.wordImage) {
+            return;
+        }
+
+        // Hide the image initially
+        this.elements.wordImage.style.display = 'none';
+
+        // Create a sanitized filename from the word
+        const sanitizedWord = this.sanitizeFilename(word.word);
+        const imagePath = `images/${sanitizedWord}.png`;
+
+        // Create a new image to test if it exists
+        const testImage = new Image();
+        testImage.onload = () => {
+            // Image exists, show it
+            this.elements.wordImage.src = imagePath;
+            this.elements.wordImage.alt = word.word;
+            this.elements.wordImage.style.display = 'block';
+        };
+        testImage.onerror = () => {
+            // Image doesn't exist, keep it hidden
+            this.elements.wordImage.style.display = 'none';
+            this.elements.wordImage.src = '';
+            this.elements.wordImage.alt = '';
+        };
+
+        // Start loading the image
+        testImage.src = imagePath;
+    }
+
+    /**
      * Update the UI for the current word
      * @param {Word} word - The current word
      */
@@ -687,10 +792,16 @@ export class UIManager {
         this.elements.promptDisplay.classList.remove('missing-pronunciation');
         this.elements.wordMeaningReview.style.display = 'none';
         this.elements.wordMeaningReview.textContent = '';
+        this.elements.wordImage.style.display = 'none';
+        this.elements.wordImage.src = '';
+        this.elements.wordImage.alt = '';
         this.elements.container.classList.remove('input-visible', 'attempts-visible', 'buttons-visible');
         this.elements.container.classList.add('buttons-visible');
 
         const hasPronunciation = word.pronunciation && word.pronunciation !== this.pronunciationPlaceholder;
+
+        // Try to load the image for the word
+        this.loadWordImage(word);
 
         switch (mode) {
             case 'review':
@@ -707,7 +818,7 @@ export class UIManager {
                 this.elements.wordPronunciation.textContent = word.pronunciation || this.pronunciationPlaceholder;
                 this.elements.wordMeaningReview.textContent = word.meaning;
                 this.elements.wordMeaningReview.style.display = 'block';
-                this.elements.reviewDisplay.style.display = 'block';
+                this.elements.reviewDisplay.style.display = 'flex'; // Ensure flex layout for alignment
                 this.elements.container.classList.add('input-visible');
                 this.elements.checkButton.textContent = 'Check';
                 this.elements.speakButton.style.display = 'inline-block'; // Show speak button in review mode
@@ -724,12 +835,16 @@ export class UIManager {
                     this.elements.wordInput.disabled = true;
                     this.elements.checkButton.disabled = true;
                 }
-                this.elements.promptDisplay.style.display = 'block';
+                this.elements.promptDisplay.style.display = 'flex'; // Ensure flex layout for alignment
                 this.elements.container.classList.add('input-visible', 'attempts-visible');
                 this.elements.checkButton.textContent = 'Check';
                 this.elements.speakButton.style.display = 'inline-block'; // Show speak button in dictation mode
                 this.updateAttemptCounter();
                 if (!this.elements.wordInput.disabled) this.elements.wordInput.focus();
+
+                // Show the image in Dictation mode
+                this.elements.wordImageContainer.style.display = 'block';
+                this.elements.promptDisplay.appendChild(this.elements.wordImageContainer);
                 break;
 
             case 'listening':
@@ -739,6 +854,9 @@ export class UIManager {
                 this.elements.speakButton.style.display = 'inline-block';
                 this.updateAttemptCounter();
                 this.elements.wordInput.focus();
+
+                // Show the image in Listening mode
+                this.elements.wordImage.style.display = 'block';
                 break;
         }
 
@@ -1006,7 +1124,7 @@ export class UIManager {
         }
 
         // Get selected units text
-        const selectedUnitIndices = currentLevel.selectedUnitIndices;
+        const selectedUnitIndices = currentLevel.selectedUnitIndices || [];
         const selectedUnitsText = selectedUnitIndices.length > 0 ?
             `Units: ${selectedUnitIndices.map(i => i + 1).join(', ')}` :
             'No units selected';

@@ -379,16 +379,85 @@ h1 {
 #review-display {
     text-align: center;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 15px;
     min-height: 200px;
     justify-content: center;
     cursor: pointer;
     transition: background-color 0.2s ease;
+    position: relative;
 }
 
 #review-display:hover {
     background-color: #f0f8ff;
+}
+
+.word-content {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    flex: 1;
+    justify-content: center;
+    width: 50%;
+    height: 300px; /* Set a fixed height for consistency */
+    box-sizing: border-box;
+}
+
+.word-image-container {
+    width: 50%;
+    height: 300px; /* Set a fixed height for consistency */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+.word-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensure the image covers the container without distortion */
+    border-radius: 8px; /* Optional: Add rounded corners for better aesthetics */
+}
+
+.image-popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.image-popup.active {
+    display: flex;
+}
+
+.image-popup-content {
+    max-width: 90%;
+    max-height: 90%;
+    position: relative;
+}
+
+.image-popup-content img {
+    max-width: 100%;
+    max-height: 90vh;
+    object-fit: contain;
+    border-radius: 4px;
+}
+
+.image-popup-close {
+    position: absolute;
+    top: -30px;
+    right: 0;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    background: none;
+    border: none;
 }
 
 .word-text {
@@ -429,6 +498,10 @@ h1 {
     align-items: center;
     justify-content: center;
     font-size: 1.5em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
 }
 
 #prompt-display:hover {
@@ -439,6 +512,22 @@ h1 {
     color: #dc3545;
     font-style: italic;
     font-size: 1em;
+}
+
+#prompt-display .prompt-image-container {
+    width: 300px; /* Same size as word-image-container */
+    height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+#prompt-display .prompt-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
 }
 
 #prompt {
